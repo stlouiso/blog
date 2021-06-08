@@ -1,7 +1,8 @@
 name: "blog"
-title: "My Blog"
+title: "The Lob"
 description: |
-  My Blog
+  The Louis Oberdiear (Lob) Blog.
+base_url: thelob.blog
 output_dir: "_site"
 navbar:
   right:

@@ -1,11 +1,10 @@
 ---
-title: "Welcome to My Blog"
+title: "Welcome to The Lob"
 description: |
-  Welcome to our new blog, My Blog. We hope you enjoy 
-  reading what we have to say!
+  Welcome to my new blog, The Lob. I plan on using this blog to to explain and practice various data science techniques using sports data.
 author:
-  - name: Nora Jones 
-    url: https://example.com/norajones
+  - name: Louis Oberdiear 
+    url: thelob.blog/louisoberdiear
     affiliation: Spacely Sprockets
     affiliation_url: https://example.com/spacelysprokets
 date: 06-07-2021
