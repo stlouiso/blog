@@ -5,6 +5,7 @@ description: |
 base_url: https://thelob.blog
 output_dir: "_site"
 navbar:
+  logo: images/theloblogo.png
   right:
     - text: "Home"
       href: index.html
