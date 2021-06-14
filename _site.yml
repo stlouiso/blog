@@ -1,8 +1,8 @@
 name: "blog"
 title: "Louis Oberdiear"
 description: |
-  The Louis Oberdiear (LOb) Blog.
-base_url: thelob.blog
+  The Louis Oberdiear (LOB) Blog.
+base_url: https://thelob.blog
 output_dir: "_site"
 navbar:
   logo: images/theloblogo.png
