@@ -12,6 +12,8 @@ navbar:
       href: index.html
     - text: "About"
       href: about.html
+    - icon: fab fa-linkedin-in
+      href: https://www.linkedin.com/in/louisoberdiear/
     - icon: fab fa-github
       href: https://github.com/stlouiso/
     - icon: fab fa-twitter
