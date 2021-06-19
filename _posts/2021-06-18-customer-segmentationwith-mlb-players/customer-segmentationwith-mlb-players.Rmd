@@ -1,0 +1,300 @@
+---
+title: "Customer Segmentation...with MLB players Pt. 1"
+description: |
+  Many businesses try to create customer segmentation to gain a greater understanding of their customer base. This post will show how this can be done from start to finish and how to interpret and validate the new found segments. Throughout this example advice on how to do this with retail data is given.
+author:
+  - name: Louis Oberdiear
+    url: thelob.blog/louisoberdiear
+date: 06-18-2021
+output:
+  distill::distill_article:
+    self_contained: false
+categories:
+  - Customer Segmentation
+  - cluster analysis
+  - data science
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Customer Segmentation of MLB Baseball Players
+The goal of customer segmentation is to find hidden groups in data. The customer in this example will be MLB hitters. We are going to be coming at this problem as if we don't know anything about MLB hitters with the goal of understanding the different types of hitters utilizing different clustering algorithms.
+
+# The Data
+For customer segmentation, you need data that describes the customer. In retail this could be how recently they have made a purchase, how many times they have made a purchase in the last 12 months, and the total amount of money they have spent in the last 12 months. These describe a customer's shopping behavior. You could include age and some other area demographics like Zip Code Household Income and Household size. You just need relevant data that describes the customer. 
+
+In this example, we need to get data that describes MLB hitters. We are going to use data from 2018 for the following:  
+
+* Total At Bats
+* Walks
+* Strikeouts
+* Singles
+* Doubles
+* Triples
+* Home Runs
+
+The reason for these specific data points is because they are the outcomes of an at-bat. This could be applied to retail setting also. Number of times a person visits your site, time spent browsing site, products looked at, number of products added to cart, and number of products purchased. 
+
+We can find the data in the R package 'Lahman' which is from Sean Lahman's baseball database. More info can be found here: [www.seanlahman.com](http://www.seanlahman.com/baseball-archive/statistics/) 
+
+
+Install the package:
+
+```{r download-package, eval=FALSE}
+install.packages("Lahman")
+```
+
+
+
+```{r get-data, include=TRUE}
+library(Lahman)
+library(gt)
+data(Batting)
+head(Batting) %>%
+  gt()
+```
+
+Glimpse the data:
+
+```{r glimpse-data, message=FALSE}
+library(dplyr)
+glimpse(Batting)
+```
+
+We only want data from 2018 so we need to filter down and select the data points we want:
+
+
+```{r}
+batting_2018 <- Batting %>%
+  filter(yearID == 2018) %>%
+  select(c(playerID, teamID, lgID, G, AB, SH, SF, BB, HBP, IBB, SO, H, X2B, X3B, HR))
+head(batting_2018) %>% gt()
+```
+For the non-baseball people:
+
+- AB  = At Bats
+- SH  = Sacrifice Bunt
+- SF  = Sacrifice Fly
+- BB  = Base on Balls (walks)
+- HBP = Hit By Pitch
+- IBB = Intentional Base on Balls (intentional walks)
+- SO  = Strike Outs
+- H   = Singles
+- X2H = Doubles
+- X3H = Triples
+- HR  = Home Runs
+
+The reason we are pulling extra data points like SH, SF, HBP, & IBB is because in the end we want Total At Bats. Baseball data is a little tricky in that only some plate appearances are considered an 'At Bat'. Walks and sacrifices aren't considered an 'At Bat' but for the purpose of this analysis we'll want the total number of times they come to the plate in a season.
+
+```{r}
+batting_2018 <- batting_2018 %>%
+  mutate(TBB = BB + IBB + HBP,         # combine all walk types
+         TAB = AB + TBB + SH + SF) %>% # create total at-bats
+  select(-c(BB, IBB, HBP, SH, SF)) %>% # remove unneeded columns
+  select(c(playerID, teamID, lgID, G, TAB, TBB, SO, H, X2B, X3B, HR))
+
+head(batting_2018) %>% gt()
+```
+
+# EDA
+
+Let do some EDA on our data:
+
+```{r}
+library(DataExplorer)
+DataExplorer::profile_missing(batting_2018) %>%
+  arrange(desc(num_missing)) %>%
+  gt()
+```
+
+No missing data. Let's look at the distributions:
+
+```{r}
+DataExplorer::plot_bar(batting_2018, ncol = 4, nrow = 4)
+DataExplorer::plot_histogram(batting_2018, ncol = 4, nrow = 4)
+```
+
+A LOT of zero values. We need to figure out a good minimum for the number of at-bats a hitter needs to be included in our analysis. For this, instead of using analysis, I'm going to use business logic and require a player to have at least appeared in 100 games in the 2018 season.
+
+```{r}
+batting_2018 <- batting_2018 %>%
+  filter(G >= 100)
+```
+
+Look at the distributions again:
+
+```{r}
+DataExplorer::plot_histogram(batting_2018, ncol = 4, nrow = 4)
+```
+
+Much better. Most distributions (other than triples) are looking a lot more normal. Triples happen so infrequently that I'm going to combine them with doubles and call them extra base hits. 
+
+
+In cluster analysis, it's important to get all data points on the same scale. If you run the unscaled data through the kmeans algorithim it will potentially over-emphasize a variable that is on a larger scale. In retail this is common. If you have number of times visited store and dollars per visit then the kmeans algorithim will over-emphasize dollars per visit because it could potential be in the hundreds or thousands of dollars while visits are only in the single and double digit range. 
+
+In this example we have to take an extra step before we scale. We want to make everything a per-at-bat level. This will let us know the percentage of times a player walks, gets a hit, etc then we will scale each variable. This could also be done for retail data and transforming the data at a per-visit level.
+
+```{r}
+batting_2018 <- batting_2018 %>%
+  mutate(XBH = X2B + X3B,
+         walks = TBB/TAB,
+         strikeouts = SO/TAB,
+         singles = H/TAB,
+         extras = XBH/TAB,
+         triples = X3B/TAB,
+         homeruns = HR/TAB) %>%
+  mutate(walks_scaled = scale(walks),
+         strikeouts_scaled = scale(strikeouts),
+         singles_scaled = scale(singles),
+         extras_scaled = scale(extras),
+         homeruns_scaled = scale(homeruns))
+
+head(batting_2018) %>% gt()
+```
+
+# K-Means Cluster Analysis
+We have the data prepped and scaled so we are ready to run it through the kmeans algorithm. The tricky part of cluster analysis via kmeans is kmeans forces the user to select the number of clusters (k). Our first task is determining k and there are a few ways to do this. The two methods I will showcase is called the elbow method and silhouette scores. 
+
+### Elbow Method
+
+
+```{r determining-k, message=FALSE}
+library(factoextra)
+fviz_nbclust(select(batting_2018, contains('scaled')), kmeans, method = "wss")
+```
+
+The elbow method plots the total within sum of square errors. The way kmeans works guarantees that the tot.withinss will always decrease with an increase in clusters. Our goal isn't to find the lowest tot.withinss but to find the point of diminishing returns or the 'elbow' point in the graph. The elbow seems to be at 4 clusters. 
+
+## Silhouette Method
+
+```{r}
+fviz_nbclust(select(batting_2018, contains('scaled')), kmeans, method = "silhouette")
+```
+
+This method suggests 2 with 3 being close behind. 
+
+## Gap Statistic
+
+```{r}
+fviz_nbclust(select(batting_2018, contains('scaled')), kmeans, method = "gap_stat")
+```
+
+The gap statistic suggests 1 cluster. Unfortunately the methods don't all agree which is usually the case when doing this analysis out in the wild. Fortunately we can visualize the clusters. 
+
+```{r}
+set.seed(123)
+k3 <- kmeans(select(batting_2018, contains('scaled')), 3, nstart = 25)
+k4 <- kmeans(select(batting_2018, contains('scaled')), 4, nstart = 25)
+fviz_cluster(k3, data = select(batting_2018, contains('scaled')))
+fviz_cluster(k4, data = select(batting_2018, contains('scaled')))
+```
+
+Not great separation so it's understandable that none of the methods agreed on a specific k but I like 4 clusters so we are going to go with that. Let's join the clusters back to the data and see if we can determine the types of hitters in each cluster.
+
+```{r}
+batting_2018 %>%
+  mutate(cluster = k4$cluster) %>%
+  group_by(cluster) %>%
+  summarize(n = n(),
+         walks = mean(walks_scaled),
+         strikeouts = mean(strikeouts_scaled),
+         singles = mean(singles_scaled),
+         extras = mean(extras_scaled),
+         homeruns = mean(homeruns_scaled)) %>%
+  gt()
+```
+
+Cluster 1 = high walks, high strikeouts, low singles, low extras, high homeruns
+
+Cluster 2 = low walks, low strikeouts, high singles, high extras, high homeruns
+
+Cluster 3 = low walks, highish strikouts, low singles, low extras, low homeruns
+
+Cluster 4 = low walks, low strikeouts, high singles, avg extras, low homeruns
+
+
+Let's give them names.
+
+### Cluster 1 = The Three True Outcome Hitters
+These hitters are already known in the baseball world and have been give a name because every at bat results in one of the 'Three True Outcomes' which are Walk, Strikeout, Home Run. Examples of this type of hitter is Aaron Judge and Bryce Harper. Let's see if they ended up in cluster 1.
+
+```{r}
+#Aaron Judge, Bryce Harper
+batting_2018 %>%
+  mutate(cluster = k4$cluster) %>%
+  filter(playerID %in% c("judgeaa01","harpebr03")) %>%
+  select(playerID, teamID, cluster, contains('scaled')) %>%
+  gt()
+```
+
+Let's check the other hitters in this cluster:
+
+```{r}
+batting_2018 %>%
+  mutate(cluster = k4$cluster) %>%
+  filter(cluster == 1) %>%
+  arrange(desc(G)) %>%
+  select(playerID, teamID, cluster, contains('scaled')) %>%
+  head() %>%
+  gt()
+```
+
+
+### Cluster 2 = All Around Good Hitters
+They don't have a weak area, walk enough, hit a lot of singles and have power by hitting a lot of homeruns. These are the well-rounded great hitters. We would expect the MVP winner Mookie Betts to be in this category. He might well be the most well-rounded hitter in the MLB with almost no weaknesses.
+
+```{r}
+#Mookie Betts
+batting_2018 %>%
+  mutate(cluster = k4$cluster) %>%
+  filter(playerID %in% c("bettsmo01")) %>%
+  select(playerID, teamID, cluster, contains('scaled')) %>%
+  gt()
+```
+
+Look at those z-scores for Mookie. Incredible. 
+
+```{r}
+batting_2018 %>%
+  mutate(cluster = k4$cluster) %>%
+  filter(cluster == 2) %>%
+  arrange(desc(G)) %>%
+  select(playerID, teamID, cluster, contains('scaled')) %>%
+  head() %>%
+  gt()
+```
+All of the hitters shown above are great hitters. This is good to see. 
+
+### Cluster 3 = Weak Hitters
+These batters struggle getting on base (Walks) and strikeout a lot. These are the weak hitters that are most likely at the bottom of the batting order. Most of these names would not be unfamiliar to casually MLB fans.
+
+```{r}
+batting_2018 %>%
+  mutate(cluster = k4$cluster) %>%
+  filter(cluster == 3) %>%
+  arrange(desc(G)) %>%
+  select(playerID, teamID, cluster, contains('scaled')) %>%
+  head() %>%
+  gt()
+```
+
+### Cluster 4 = Balls-in-Play
+They don't walk, they don't strikeout, and they don't hit home runs. they just put the ball in play in most at bats.
+  
+```{r}
+batting_2018 %>%
+  mutate(cluster = k4$cluster) %>%
+  filter(cluster == 4) %>%
+  arrange(desc(G)) %>%
+  select(playerID, teamID, cluster, contains('scaled')) %>%
+  head() %>%
+  gt()
+```
+Nick Markakis is a great example of these cluster. He walks slightly above average, almost never strikes out, a ton of singles and extras with well below average home runs. 
+
+# Summary
+We went through the process of getting the customer data (MLB hitting data), exploring the missing values and distributions, scaling the data, determining an appropriate k using three different methods and then interpreting and validating our segments. 
+
