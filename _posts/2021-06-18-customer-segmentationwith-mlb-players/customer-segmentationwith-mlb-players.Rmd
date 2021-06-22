@@ -9,6 +9,7 @@ date: 06-18-2021
 output:
   distill::distill_article:
     self_contained: false
+preview: clusters.png
 categories:
   - customer segmentation
   - cluster analysis
@@ -157,7 +158,13 @@ head(batting_2018) %>% gt()
 ```
 
 # K-Means Cluster Analysis
+<<<<<<< HEAD
 We have the data prepped and scaled so we are ready to run it through the kmeans algorithm. The tricky part of cluster analysis via kmeans is kmeans forces the user to select the number of clusters (k). Our first task is determining k and there are a few ways to do this. The three methods I will showcase are called the elbow method, silhouette scores, and the gap statistic.
+||||||| 7e0b514
+We have the data prepped and scaled so we are ready to run it through the kmeans algorithm. The tricky part of cluster analysis via kmeans is kmeans forces the user to select the number of clusters (k). Our first task is determining k and there are a few ways to do this. The two methods I will showcase is called the elbow method and silhouette scores. 
+=======
+We have the data prepped and scaled so we are ready to run it through the kmeans algorithm. The tricky part of cluster analysis via kmeans is kmeans forces the user to select the number of clusters (k). Our first task is determining k and there are a few ways to do this. The three methods I will showcase is called the elbow method, silhouette scores, and gap statistic. 
+>>>>>>> main
 
 ### Elbow Method
 
