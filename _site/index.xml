@@ -12,10 +12,11 @@
       <title>Customer Segmentation...with MLB players Pt. 1</title>
       <dc:creator>Louis Oberdiear</dc:creator>
       <link>https://thelob.blog/posts/2021-06-18-customer-segmentationwith-mlb-players</link>
-      <description>Many businesses try to create customer segmentation to gain a greater understanding of their customer base. This post will show how this can be done from start to finish and how to interpret and validate the new found segments. Throughout this example advice on how to do this with retail data is given.</description>
-      <category>Customer Segmentation</category>
+      <description>Many businesses try to create customer segmentation to gain a greater understanding of their customer base. This post will show how this can be done from start to finish and how to interpret and validate the newly found segments. Throughout this example advice on how to do this with retail data is given.</description>
+      <category>customer segmentation</category>
       <category>cluster analysis</category>
       <category>data science</category>
+      <category>rstats</category>
       <guid>https://thelob.blog/posts/2021-06-18-customer-segmentationwith-mlb-players</guid>
       <pubDate>Fri, 18 Jun 2021 00:00:00 +0000</pubDate>
       <media:content url="https://thelob.blog/posts/2021-06-18-customer-segmentationwith-mlb-players/customer-segmentationwith-mlb-players_files/figure-html5/unnamed-chunk-4-1.png" medium="image" type="image/png" width="1248" height="768"/>

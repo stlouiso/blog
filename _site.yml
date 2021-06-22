@@ -6,18 +6,19 @@ base_url: https://thelob.blog
 output_dir: "_site"
 repository_url: https://github.com/stlouiso/blog
 navbar:
-  logo: images/theloblogo.png
   right:
     - text: "Home"
       href: index.html
     - text: "About"
       href: about.html
-    - icon: fab fa-linkedin
+    - icon: fab fa-linkedin-in
       href: https://www.linkedin.com/in/louisoberdiear/
     - icon: fab fa-github
       href: https://github.com/stlouiso/
     - icon: fab fa-twitter
       href: https://twitter.com/stlouiso
+    - icon: fa fa-rss
+      href: index.xml
 output: distill::distill_article
 
 #1d3fbf
