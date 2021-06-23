@@ -11,10 +11,9 @@ output:
     self_contained: false
 preview: clusters.png
 categories:
-  - customer segmentation
+  - Customer Segmentation
   - cluster analysis
   - data science
-  - rstats
 ---
 
 
@@ -23,12 +22,12 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # Customer Segmentation of MLB Baseball Players
-The goal of customer segmentation is to find hidden groups in data. The customer in this example will be MLB hitters. We are going to be coming at this problem as if we don’t know anything about MLB hitters to understand the different types of hitters utilizing different clustering algorithms.
+The goal of customer segmentation is to find hidden groups in data. The customer in this example will be MLB hitters. We are going to be coming at this problem as if we don't know anything about MLB hitters to understand the different types of hitters utilizing different clustering algorithms.
 
 # The Data
-For customer segmentation, you need data that describes the customer. In retail, this could be how recently they have made a purchase, how many times they have purchased in the last 12 months, and the total amount of money they have spent in the last 12 months. These describe a customer’s shopping behavior. You could include age and some other area demographics like Zip Code Household Income and Household size. You just need relevant data that describes the customer.
+For customer segmentation, you need data that describes the customer. In retail, this could be how recently they have made a purchase, how many times they have purchased in the last 12 months, and the total amount of money they have spent in the last 12 months. These describe a customer's shopping behavior. You could include age and some other area demographics like Zip Code Household Income and Household size. You just need relevant data that describes the customer. 
 
-In this example, we need to get data that describes MLB hitters. We are going to use data from 2018 for the following:
+In this example, we need to get data that describes MLB hitters. We are going to use data from 2018 for the following:  
 
 * Total At Bats
 * Walks
@@ -38,7 +37,7 @@ In this example, we need to get data that describes MLB hitters. We are going to
 * Triples
 * Home Runs
 
-The reason for these specific data points is because they are the outcomes of an at-bat. This could be applied to retail settings also. The number of times a person visits your site, time spent browsing the site, products looked at, the number of products added to the cart, and the number of products purchased.
+The reason for these specific data points is because they are the outcomes of an at-bat. This could be applied to retail settings also. The number of times a person visits your site, time spent browsing the site, products looked at, the number of products added to the cart, and the number of products purchased. 
 
 We can find the data in the R package 'Lahman' which is from Sean Lahman's baseball database. More info can be found here: [www.seanlahman.com](http://www.seanlahman.com/baseball-archive/statistics/) 
 
@@ -89,7 +88,7 @@ For the non-baseball people:
 - X3H = Triples
 - HR  = Home Runs
 
-The reason we are pulling extra data points like SH, SF, HBP, & IBB is that in the end, we want Total At Bats. Baseball data is a little tricky in that only some plate appearances are considered an ‘At Bat’. Walks and sacrifices aren’t considered an ‘At Bat’ but for this analysis, we’ll want the total number of times they come to the plate in a season.
+The reason we are pulling extra data points like SH, SF, HBP, & IBB is that in the end, we want Total At Bats. Baseball data is a little tricky in that only some plate appearances are considered an 'At Bat'. Walks and sacrifices aren't considered an 'At Bat' but for this analysis, we'll want the total number of times they come to the plate in a season.
 
 ```{r}
 batting_2018 <- batting_2018 %>%
@@ -119,7 +118,7 @@ DataExplorer::plot_bar(batting_2018, ncol = 4, nrow = 4)
 DataExplorer::plot_histogram(batting_2018, ncol = 4, nrow = 4)
 ```
 
-A LOT of zero values. We need to figure out a good minimum for the number of games played a player needs to be included in our analysis. For this, instead of using analysis, I'm going to use business logic and require a player to have at least appeared in 100 games in the 2018 season.
+A LOT of zero values. We need to figure out a good minimum for the number of games played a hitter needs to be included in our analysis. For this, instead of using analysis, I'm going to use business logic and require a player to have at least appeared in 100 games in the 2018 season.
 
 ```{r}
 batting_2018 <- batting_2018 %>%
@@ -158,13 +157,7 @@ head(batting_2018) %>% gt()
 ```
 
 # K-Means Cluster Analysis
-<<<<<<< HEAD
-We have the data prepped and scaled so we are ready to run it through the kmeans algorithm. The tricky part of cluster analysis via kmeans is kmeans forces the user to select the number of clusters (k). Our first task is determining k and there are a few ways to do this. The three methods I will showcase are called the elbow method, silhouette scores, and the gap statistic.
-||||||| 7e0b514
-We have the data prepped and scaled so we are ready to run it through the kmeans algorithm. The tricky part of cluster analysis via kmeans is kmeans forces the user to select the number of clusters (k). Our first task is determining k and there are a few ways to do this. The two methods I will showcase is called the elbow method and silhouette scores. 
-=======
 We have the data prepped and scaled so we are ready to run it through the kmeans algorithm. The tricky part of cluster analysis via kmeans is kmeans forces the user to select the number of clusters (k). Our first task is determining k and there are a few ways to do this. The three methods I will showcase is called the elbow method, silhouette scores, and gap statistic. 
->>>>>>> main
 
 ### Elbow Method
 
@@ -174,7 +167,7 @@ library(factoextra)
 fviz_nbclust(select(batting_2018, contains('scaled')), kmeans, method = "wss")
 ```
 
-The elbow method plots the total within sum of square errors. The way kmeans works guarantees that the tot.withinss will always decrease with an increase in clusters. Our goal isn't to find the lowest tot.withinss but to find the point of diminishing returns or the 'elbow' point in the graph. The elbow seems to be at 3 or 4 clusters. 
+The elbow method plots the total within sum of square errors. The way kmeans works guarantees that the tot.withinss will always decrease with an increase in clusters. Our goal isn't to find the lowest tot.withinss but to find the point of diminishing returns or the 'elbow' point in the graph. The elbow seems to be at 4 clusters. 
 
 ## Silhouette Method
 
@@ -190,7 +183,7 @@ This method suggests 2 with 3 being close behind.
 fviz_nbclust(select(batting_2018, contains('scaled')), kmeans, method = "gap_stat")
 ```
 
-The gap statistic suggests 1 cluster. Unfortunately the methods don't all agree which is usually the case when doing this analysis out in the wild. Fortunately we can visualize the clusters. Here we will visualize 3 and 4 clusters because 1 and 2 clusters aren't informative enough. 2 clusters would most likely segment good hitters from bad hitters and we want more unique groups than that. 
+The gap statistic suggests 1 cluster. Unfortunately the methods don't all agree which is usually the case when doing this analysis out in the wild. Fortunately we can visualize the clusters. We are going to only visualize 3 and 4 clusters because 2 clusters wouldn't be informative enough to give us any insights.
 
 ```{r}
 set.seed(123)
@@ -215,13 +208,13 @@ batting_2018 %>%
   gt()
 ```
 
-Cluster 1 = high walks, high strikeouts, low singles, low extras, high home runs
+Cluster 1 = high walks, high strikeouts, low singles, low extras, high homeruns
 
-Cluster 2 = low walks, low strikeouts, high singles, high extras, high home runs
+Cluster 2 = low walks, low strikeouts, high singles, high extras, high homeruns
 
-Cluster 3 = low walks, highish strikouts, low singles, low extras, low home runs
+Cluster 3 = low walks, highish strikouts, low singles, low extras, low homeruns
 
-Cluster 4 = low walks, low strikeouts, high singles, avg extras, low home runs
+Cluster 4 = low walks, low strikeouts, high singles, avg extras, low homeruns
 
 
 Let's give them names.
@@ -249,11 +242,10 @@ batting_2018 %>%
   head() %>%
   gt()
 ```
-
-All those hitters seem to be appropriately clustered except Carlos Santana. Carlos Santana walks a lot, but doesn't strikeout, and hits home runs at a slightly above average rate. He is a bit of a unique case so the extreme walk rate got him clustered to this group.
+All of these are pretty good examples of 'Three True Outcome' hitters except Carlos Santana (santaca01). His defining attribute is that he draws a ton of walks, but he doesn't strikeout or hit above average home runs so he is not a great fit for this category. The most likely reason he was put in here is because he fits the walk profile of this group and doesn't belong in any of the other groups either.
 
 ### Cluster 2 = All Around Good Hitters
-They don't have a weak area, walk enough, hit a lot of singles and have power by hitting a lot of home runs. These are the well-rounded great hitters. We would expect the MVP winner Mookie Betts to be in this category. He might well be the most well-rounded hitter in the MLB with almost no weaknesses.
+They don't have a weak area, walk enough, hit a lot of singles and have power by hitting a lot of homeruns. These are the well-rounded great hitters. We would expect the MVP winner Mookie Betts to be in this category. He might well be the most well-rounded hitter in the MLB with almost no weaknesses.
 
 ```{r}
 #Mookie Betts
@@ -291,7 +283,7 @@ batting_2018 %>%
 ```
 
 ### Cluster 4 = Balls-in-Play
-They don't walk, they don't strikeout, and they don't hit home runs. they just put the ball in play in most at bats.
+They don't walk, they don't strikeout, and they don't hit home runs. They just put the ball in play in most at bats.
   
 ```{r}
 batting_2018 %>%
