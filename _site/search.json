@@ -3,17 +3,17 @@
     {
       "path": "about.html",
       "title": "About this blog",
-      "description": "Some additional details about the blog",
+      "description": "TBD",
       "author": [],
       "contents": "\r\n\r\n\r\n\r\n",
-      "last_modified": "2021-06-19T13:54:16-05:00"
+      "last_modified": "2021-06-23T19:03:54-05:00"
     },
     {
       "path": "index.html",
       "title": "Posts",
       "author": [],
       "contents": "\r\n\r\n\r\n\r\n",
-      "last_modified": "2021-06-19T13:58:32-05:00"
+      "last_modified": "2021-06-23T19:17:11-05:00"
     }
   ],
   "collections": ["posts/posts.json"]
