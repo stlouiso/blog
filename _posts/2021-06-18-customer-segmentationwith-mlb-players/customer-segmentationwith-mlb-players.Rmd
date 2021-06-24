@@ -194,7 +194,7 @@ fviz_cluster(k3, data = select(batting_2018, contains('scaled')))
 fviz_cluster(k4, data = select(batting_2018, contains('scaled')))
 ```
 
-Not great separation so it's understandable that none of the methods agreed on a specific k but I like 4 clusters so we are going to go with that. Let's join the clusters back to the data and see if we can determine the types of hitters in each cluster.
+Not great separation so it's understandable that none of the methods agreed on a specific k but I like 4 clusters so we are going to go with that. Let's join the clusters back to the data and see if we can determine the types of hitters in each cluster. Remember since we scaled the data we are looking at standard scores or z-scores. A z-score of 0 means average for that stat, the more positive means the more above average and vice-versa for negative scores.
 
 ```{r}
 batting_2018 %>%
@@ -209,6 +209,31 @@ batting_2018 %>%
   gt()
 ```
 
+Let's visualize these clusters with some bar charts. Might be easier to digest.
+
+```{r}
+library(tidyr)
+library(ggplot2)
+batting_2018 %>%
+  mutate(cluster = k4$cluster) %>%
+  group_by(cluster) %>%
+  summarize(walks = mean(walks_scaled),
+         strikeouts = mean(strikeouts_scaled),
+         singles = mean(singles_scaled),
+         extras = mean(extras_scaled),
+         homeruns = mean(homeruns_scaled),
+         .groups = 'drop') %>%
+  pivot_longer(!cluster, names_to = "hitting_category", values_to = "z_score") %>%
+  mutate(pos = z_score >= 0) %>%
+  ggplot(aes(x = hitting_category, y = z_score, fill = pos)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  theme(legend.position = "none") +
+  facet_wrap(facets = vars(cluster), nrow = 2, ncol = 2)
+```
+
+
+
 Cluster 1 = high walks, high strikeouts, low singles, low extras, high homeruns
 
 Cluster 2 = low walks, low strikeouts, high singles, high extras, high homeruns
@@ -221,6 +246,28 @@ Cluster 4 = low walks, low strikeouts, high singles, avg extras, low homeruns
 Let's give them names.
 
 ### Cluster 1 = The Three True Outcome Hitters
+
+```{r}
+batting_2018 %>%
+  mutate(cluster = k4$cluster) %>%
+  group_by(cluster) %>%
+  summarize(walks = mean(walks_scaled),
+         strikeouts = mean(strikeouts_scaled),
+         singles = mean(singles_scaled),
+         extras = mean(extras_scaled),
+         homeruns = mean(homeruns_scaled),
+         .groups = 'drop') %>%
+  pivot_longer(!cluster, names_to = "hitting_category", values_to = "z_score") %>%
+  mutate(pos = z_score >= 0) %>%
+  filter(cluster == 1) %>%
+  ggplot(aes(x = hitting_category, y = z_score, fill = pos)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  theme(legend.position = "none") +
+  ggtitle(label = "The Three True Outcome Hitters")
+```
+
+
 These hitters are already known in the baseball world and have been give a name because every at bat results in one of the 'Three True Outcomes' which are Walk, Strikeout, Home Run. Examples of this type of hitter is Aaron Judge and Bryce Harper. Let's see if they ended up in cluster 1.
 
 ```{r}
@@ -228,8 +275,15 @@ These hitters are already known in the baseball world and have been give a name 
 batting_2018 %>%
   mutate(cluster = k4$cluster) %>%
   filter(playerID %in% c("judgeaa01","harpebr03")) %>%
-  select(playerID, teamID, cluster, contains('scaled')) %>%
-  gt()
+  select(playerID, contains('scaled')) %>%
+  pivot_longer(!playerID, names_to = "hitting_category", values_to = "z_score") %>%
+  mutate(pos = z_score >= 0) %>%
+  ggplot(aes(x = hitting_category, y = z_score, fill = pos)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  theme(legend.position = "none") +
+  facet_wrap(facets = vars(playerID), nrow = 2, ncol = 2) +
+  ggtitle(label = "Bryce Harper and Aaron Judge")
 ```
 
 Let's check the other hitters in this cluster:
@@ -241,11 +295,41 @@ batting_2018 %>%
   arrange(desc(G)) %>%
   select(playerID, teamID, cluster, contains('scaled')) %>%
   head() %>%
-  gt()
+  select(playerID, contains('scaled')) %>%
+  pivot_longer(!playerID, names_to = "hitting_category", values_to = "z_score") %>%
+  mutate(pos = z_score >= 0) %>%
+  ggplot(aes(x = hitting_category, y = z_score, fill = pos)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  theme(legend.position = "none") +
+  facet_wrap(facets = vars(playerID), nrow = 2, ncol = 3) +
+  ggtitle(label = "The Three True Outcome Hitters")
 ```
 All of these are pretty good examples of 'Three True Outcome' hitters except Carlos Santana (santaca01). His defining attribute is that he draws a ton of walks, but he doesn't strikeout or hit above average home runs so he is not a great fit for this category. The most likely reason he was put in here is because he fits the walk profile of this group and doesn't belong in any of the other groups either.
 
 ### Cluster 2 = All Around Good Hitters
+
+```{r}
+batting_2018 %>%
+  mutate(cluster = k4$cluster) %>%
+  group_by(cluster) %>%
+  summarize(walks = mean(walks_scaled),
+         strikeouts = mean(strikeouts_scaled),
+         singles = mean(singles_scaled),
+         extras = mean(extras_scaled),
+         homeruns = mean(homeruns_scaled),
+         .groups = 'drop') %>%
+  pivot_longer(!cluster, names_to = "hitting_category", values_to = "z_score") %>%
+  mutate(pos = z_score >= 0) %>%
+  filter(cluster == 2) %>%
+  ggplot(aes(x = hitting_category, y = z_score, fill = pos)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  theme(legend.position = "none") +
+  ggtitle(label = "All Around Good Hitters")
+```
+
+
 They don't have a weak area, walk enough, hit a lot of singles and have power by hitting a lot of homeruns. These are the well-rounded great hitters. We would expect the MVP winner Mookie Betts to be in this category. He might well be the most well-rounded hitter in the MLB with almost no weaknesses.
 
 ```{r}
@@ -254,7 +338,14 @@ batting_2018 %>%
   mutate(cluster = k4$cluster) %>%
   filter(playerID %in% c("bettsmo01")) %>%
   select(playerID, teamID, cluster, contains('scaled')) %>%
-  gt()
+  select(playerID, contains('scaled')) %>%
+  pivot_longer(!playerID, names_to = "hitting_category", values_to = "z_score") %>%
+  mutate(pos = z_score >= 0) %>%
+  ggplot(aes(x = hitting_category, y = z_score, fill = pos)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  theme(legend.position = "none") +
+  ggtitle(label = "Mookie Betts")
 ```
 
 Look at those z-scores for Mookie. Incredible. 
@@ -266,11 +357,40 @@ batting_2018 %>%
   arrange(desc(G)) %>%
   select(playerID, teamID, cluster, contains('scaled')) %>%
   head() %>%
-  gt()
+  select(playerID, contains('scaled')) %>%
+  pivot_longer(!playerID, names_to = "hitting_category", values_to = "z_score") %>%
+  mutate(pos = z_score >= 0) %>%
+  ggplot(aes(x = hitting_category, y = z_score, fill = pos)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  theme(legend.position = "none") +
+  facet_wrap(facets = vars(playerID), nrow = 2, ncol = 3) +
+  ggtitle(label = "All Around Good Hitters")
 ```
 All of the hitters shown above are great hitters. This is good to see. 
 
 ### Cluster 3 = Weak Hitters
+
+```{r}
+batting_2018 %>%
+  mutate(cluster = k4$cluster) %>%
+  group_by(cluster) %>%
+  summarize(walks = mean(walks_scaled),
+         strikeouts = mean(strikeouts_scaled),
+         singles = mean(singles_scaled),
+         extras = mean(extras_scaled),
+         homeruns = mean(homeruns_scaled),
+         .groups = 'drop') %>%
+  pivot_longer(!cluster, names_to = "hitting_category", values_to = "z_score") %>%
+  mutate(pos = z_score >= 0) %>%
+  filter(cluster == 3) %>%
+  ggplot(aes(x = hitting_category, y = z_score, fill = pos)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  theme(legend.position = "none") +
+  ggtitle(label = "Weak Hitters")
+```
+
 These batters struggle getting on base (Walks) and strikeout a lot. These are the weak hitters that are most likely at the bottom of the batting order. Most of these names would not be familiar to casual MLB fans.
 
 ```{r}
@@ -280,10 +400,39 @@ batting_2018 %>%
   arrange(desc(G)) %>%
   select(playerID, teamID, cluster, contains('scaled')) %>%
   head() %>%
-  gt()
+  select(playerID, contains('scaled')) %>%
+  pivot_longer(!playerID, names_to = "hitting_category", values_to = "z_score") %>%
+  mutate(pos = z_score >= 0) %>%
+  ggplot(aes(x = hitting_category, y = z_score, fill = pos)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  theme(legend.position = "none") +
+  facet_wrap(facets = vars(playerID), nrow = 2, ncol = 3) +
+  ggtitle(label = "Weak Hitters")
 ```
 
 ### Cluster 4 = Balls-in-Play
+
+```{r}
+batting_2018 %>%
+  mutate(cluster = k4$cluster) %>%
+  group_by(cluster) %>%
+  summarize(walks = mean(walks_scaled),
+         strikeouts = mean(strikeouts_scaled),
+         singles = mean(singles_scaled),
+         extras = mean(extras_scaled),
+         homeruns = mean(homeruns_scaled),
+         .groups = 'drop') %>%
+  pivot_longer(!cluster, names_to = "hitting_category", values_to = "z_score") %>%
+  mutate(pos = z_score >= 0) %>%
+  filter(cluster == 4) %>%
+  ggplot(aes(x = hitting_category, y = z_score, fill = pos)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  theme(legend.position = "none") +
+  ggtitle(label = "Balls-in-Play")
+```
+
 They don't walk, they don't strikeout, and they don't hit home runs. They just put the ball in play in most at bats.
   
 ```{r}
@@ -293,10 +442,18 @@ batting_2018 %>%
   arrange(desc(G)) %>%
   select(playerID, teamID, cluster, contains('scaled')) %>%
   head() %>%
-  gt()
+  select(playerID, contains('scaled')) %>%
+  pivot_longer(!playerID, names_to = "hitting_category", values_to = "z_score") %>%
+  mutate(pos = z_score >= 0) %>%
+  ggplot(aes(x = hitting_category, y = z_score, fill = pos)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  theme(legend.position = "none") +
+  facet_wrap(facets = vars(playerID), nrow = 2, ncol = 3) +
+  ggtitle(label = "Balls-in-Play")
 ```
 Nick Markakis is a great example of these cluster. He walks slightly above average, almost never strikes out, a ton of singles and extras with well below average home runs. 
 
 # Summary
-We went through the process of getting the customer data (MLB hitting data), exploring the missing values and distributions, scaling the data, determining an appropriate k using three different methods and then interpreting and validating our segments. 
+We went through the process of getting the customer data (MLB hitting data), exploring the missing values and distributions, scaling the data, determining an appropriate k using three different methods and then interpreting and validating our segments. The next step is to start using our new-found segments to gain insights on things like roster construction and position importance.  
 
