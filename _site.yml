@@ -5,6 +5,7 @@ description: |
 base_url: https://thelob.blog
 output_dir: "_site"
 repository_url: https://github.com/stlouiso/blog
+google_analytics: "G-HYN1FKX625"
 navbar:
   right:
     - text: "Home"
