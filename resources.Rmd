@@ -1,0 +1,20 @@
+---
+title: Resources
+output:
+  distill::distill_article:
+    toc: true
+---
+
+List of resources I utilize to find new blogs/new packages for #RStats.
+
+
+## People, Blogs etc.
+
+- [Thomase Mock's The Mockup Blog](https://themockup.blog/)
+- [Ella Kaye's Blog](https://ellakaye.rbind.io/)
+- [RStudio](https://blog.rstudio.org/)
+- [R-bloggers](https://www.r-bloggers.com/)
+- [R Views](https://rviews.rstudio.com/)
+- [Posts You Might Have Missed](https://postsyoumighthavemissed.com/)
+
+

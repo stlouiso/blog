@@ -12,6 +12,8 @@ navbar:
       href: index.html
     - text: "About"
       href: about.html
+    - text: "Resources"
+      href: resources.html
     - icon: fab fa-linkedin-in
       href: https://www.linkedin.com/in/louisoberdiear/
     - icon: fab fa-github
