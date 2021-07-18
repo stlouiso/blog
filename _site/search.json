@@ -13,7 +13,7 @@
       "title": "Posts",
       "author": [],
       "contents": "\r\n\r\n\r\n  window.dataLayer = window.dataLayer || [];\r\n  function gtag(){dataLayer.push(arguments);}\r\n  gtag('js', new Date());\r\n\r\n  gtag('config', 'G-HYN1FKX625');\r\n\r\n\r\n\r\n",
-      "last_modified": "2021-07-15T15:52:59-05:00"
+      "last_modified": "2021-07-17T19:15:18-05:00"
     },
     {
       "path": "resources.html",
