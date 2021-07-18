@@ -17,4 +17,15 @@ List of resources I utilize to find new blogs/new packages for #RStats.
 - [R Views](https://rviews.rstudio.com/)
 - [Posts You Might Have Missed](https://postsyoumighthavemissed.com/)
 
+## Modeling
+
+- [Tidy Models bookdown TMRW](https://www.tmwr.org/)
+
+## EDA Packages
+
+- [DataExplorer](https://cran.r-project.org/web/packages/DataExplorer/vignettes/dataexplorer-intro.html)
+- [Skimr](https://cran.r-project.org/web/packages/skimr/vignettes/skimr.html)
+- [Corrplot](https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html)
+- [Corrr](https://cran.r-project.org/web/packages/corrr/vignettes/using-corrr.html)
+
 

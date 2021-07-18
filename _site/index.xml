@@ -7,13 +7,28 @@
     <description>The Louis Oberdiear (LOB) Blog.
 </description>
     <generator>Distill</generator>
-    <lastBuildDate>Fri, 18 Jun 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 24 Jun 2021 00:00:00 +0000</lastBuildDate>
+    <item>
+      <title>Predicting Customer Tenure...with MLB Hitters</title>
+      <dc:creator>Louis Oberdiear</dc:creator>
+      <link>https://thelob.blog/posts/2021-07-08-predicting-customer-tenurewith-mlb-hitters</link>
+      <description>How will long will a customer stay with our business or, in this case, how long will a MLB hitter stay in the MLB? In this post, I go through the value of knowing how long a customer will be with an organization, EDA of MLB data, how to clean and setup data for modeling, fitting a linear model and a gradient boosted tree model with xgBoost.</description>
+      <category>customer tenure</category>
+      <category>customer lifetime value</category>
+      <category>customer series</category>
+      <category>data science</category>
+      <category>rstats</category>
+      <guid>https://thelob.blog/posts/2021-07-08-predicting-customer-tenurewith-mlb-hitters</guid>
+      <pubDate>Thu, 24 Jun 2021 00:00:00 +0000</pubDate>
+      <media:content url="https://thelob.blog/posts/2021-07-08-predicting-customer-tenurewith-mlb-hitters/corrplot.png" medium="image" type="image/png" width="1248" height="768"/>
+    </item>
     <item>
       <title>Customer Segmentation...with MLB players Pt. 1</title>
       <dc:creator>Louis Oberdiear</dc:creator>
       <link>https://thelob.blog/posts/2021-06-18-customer-segmentationwith-mlb-players</link>
       <description>Many businesses try to create customer segmentation to gain a greater understanding of their customer base. This post will show how this can be done from start to finish and how to interpret and validate the newly found segments. Throughout this example advice on how to do this with retail data is given.</description>
       <category>customer segmentation</category>
+      <category>customer series</category>
       <category>cluster analysis</category>
       <category>data science</category>
       <category>rstats</category>

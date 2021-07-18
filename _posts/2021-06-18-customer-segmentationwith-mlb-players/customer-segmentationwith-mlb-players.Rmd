@@ -8,10 +8,14 @@ author:
 date: 06-18-2021
 output:
   distill::distill_article:
+    toc: true
+    code_folding: true
+    highlight: default
     self_contained: false
 preview: clusters.png
 categories:
   - customer segmentation
+  - customer series
   - cluster analysis
   - data science
   - rstats

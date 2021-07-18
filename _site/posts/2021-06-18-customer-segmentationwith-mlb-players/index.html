@@ -127,7 +127,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--radix_placeholder_rmarkdown_metadata-->
 
 <script type="text/json" id="radix-rmarkdown-metadata">
-{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output","preview","categories","citation_url","canonical_url"]}},"value":[{"type":"character","attributes":{},"value":["Customer Segmentation...with MLB players Pt. 1"]},{"type":"character","attributes":{},"value":["Many businesses try to create customer segmentation to gain a greater understanding of their customer base. This post will show how this can be done from start to finish and how to interpret and validate the newly found segments. Throughout this example advice on how to do this with retail data is given."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url"]}},"value":[{"type":"character","attributes":{},"value":["Louis Oberdiear"]},{"type":"character","attributes":{},"value":["thelob.blog/louisoberdiear"]}]}]},{"type":"character","attributes":{},"value":["06-18-2021"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]},{"type":"character","attributes":{},"value":["clusters.png"]},{"type":"character","attributes":{},"value":["customer segmentation","cluster analysis","data science","rstats"]},{"type":"character","attributes":{},"value":["https://thelob.blog/posts/2021-06-18-customer-segmentationwith-mlb-players/"]},{"type":"character","attributes":{},"value":["https://thelob.blog/posts/2021-06-18-customer-segmentationwith-mlb-players/"]}]}
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output","preview","categories","citation_url","canonical_url"]}},"value":[{"type":"character","attributes":{},"value":["Customer Segmentation...with MLB players Pt. 1"]},{"type":"character","attributes":{},"value":["Many businesses try to create customer segmentation to gain a greater understanding of their customer base. This post will show how this can be done from start to finish and how to interpret and validate the newly found segments. Throughout this example advice on how to do this with retail data is given."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url"]}},"value":[{"type":"character","attributes":{},"value":["Louis Oberdiear"]},{"type":"character","attributes":{},"value":["thelob.blog/louisoberdiear"]}]}]},{"type":"character","attributes":{},"value":["06-18-2021"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","code_folding","highlight","self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["default"]},{"type":"logical","attributes":{},"value":[false]}]}]},{"type":"character","attributes":{},"value":["clusters.png"]},{"type":"character","attributes":{},"value":["customer segmentation","customer series","cluster analysis","data science","rstats"]},{"type":"character","attributes":{},"value":["https://thelob.blog/posts/2021-06-18-customer-segmentationwith-mlb-players/"]},{"type":"character","attributes":{},"value":["https://thelob.blog/posts/2021-06-18-customer-segmentationwith-mlb-players/"]}]}
 </script>
 <!--/radix_placeholder_rmarkdown_metadata-->
   
@@ -2124,6 +2124,7 @@ gtag('config', 'G-HYN1FKX625');
 <!--radix_placeholder_categories-->
 <div class="dt-tags">
   <a href="../../index.html#category:customer_segmentation" class="dt-tag">customer segmentation</a>
+  <a href="../../index.html#category:customer_series" class="dt-tag">customer series</a>
   <a href="../../index.html#category:cluster_analysis" class="dt-tag">cluster analysis</a>
   <a href="../../index.html#category:data_science" class="dt-tag">data science</a>
   <a href="../../index.html#category:rstats" class="dt-tag">rstats</a>
@@ -2139,6 +2140,29 @@ gtag('config', 'G-HYN1FKX625');
 </div>
 
 <div class="d-article">
+<div class="d-contents d-contents-float">
+<nav class="l-text toc figcaption" id="TOC">
+<h3>Contents</h3>
+<ul>
+<li><a href="#customer-segmentation-of-mlb-baseball-players">Customer Segmentation of MLB Baseball Players</a></li>
+<li><a href="#the-data">The Data</a></li>
+<li><a href="#eda">EDA</a></li>
+<li><a href="#k-means-cluster-analysis">K-Means Cluster Analysis</a>
+<ul>
+<li><a href="#elbow-method">Elbow Method</a></li>
+<li><a href="#silhouette-method">Silhouette Method</a></li>
+<li><a href="#gap-statistic">Gap Statistic</a>
+<ul>
+<li><a href="#cluster-1-the-three-true-outcome-hitters">Cluster 1 = The Three True Outcome Hitters</a></li>
+<li><a href="#cluster-2-all-around-good-hitters">Cluster 2 = All Around Good Hitters</a></li>
+<li><a href="#cluster-3-weak-hitters">Cluster 3 = Weak Hitters</a></li>
+<li><a href="#cluster-4-balls-in-play">Cluster 4 = Balls-in-Play</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#summary">Summary</a></li>
+</ul>
+</nav>
+</div>
 <h1 id="customer-segmentation-of-mlb-baseball-players">Customer Segmentation of MLB Baseball Players</h1>
 <p>The goal of customer segmentation is to find hidden groups in data. The customer in this example will be MLB hitters. We are going to be coming at this problem as if we don’t know anything about MLB hitters to understand the different types of hitters utilizing different clustering algorithms.</p>
 <h1 id="the-data">The Data</h1>
@@ -2157,12 +2181,21 @@ gtag('config', 'G-HYN1FKX625');
 <p>We can find the data in the R package ‘Lahman’ which is from Sean Lahman’s baseball database. More info can be found here: <a href="http://www.seanlahman.com/baseball-archive/statistics/">www.seanlahman.com</a></p>
 <p>Install the package:</p>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/utils/install.packages.html'>install.packages</a></span><span class='op'>(</span><span class='st'>"Lahman"</span><span class='op'>)</span>
 </code></pre>
 </div>
+</details>
 </div>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://CRAN.R-project.org/package=Lahman'>Lahman</a></span><span class='op'>)</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://gt.rstudio.com/'>gt</a></span><span class='op'>)</span>
@@ -2171,12 +2204,13 @@ gtag('config', 'G-HYN1FKX625');
   <span class='fu'><a href='https://gt.rstudio.com/reference/gt.html'>gt</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="kdmqacevir" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+</details>
+<div id="hvkdmhsdrf" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#kdmqacevir .gt_table {
+#hvkdmhsdrf .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -2201,7 +2235,7 @@ gtag('config', 'G-HYN1FKX625');
   border-left-color: #D3D3D3;
 }
 
-#kdmqacevir .gt_heading {
+#hvkdmhsdrf .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -2213,7 +2247,7 @@ gtag('config', 'G-HYN1FKX625');
   border-right-color: #D3D3D3;
 }
 
-#kdmqacevir .gt_title {
+#hvkdmhsdrf .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -2223,7 +2257,7 @@ gtag('config', 'G-HYN1FKX625');
   border-bottom-width: 0;
 }
 
-#kdmqacevir .gt_subtitle {
+#hvkdmhsdrf .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -2233,13 +2267,13 @@ gtag('config', 'G-HYN1FKX625');
   border-top-width: 0;
 }
 
-#kdmqacevir .gt_bottom_border {
+#hvkdmhsdrf .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#kdmqacevir .gt_col_headings {
+#hvkdmhsdrf .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2254,7 +2288,7 @@ gtag('config', 'G-HYN1FKX625');
   border-right-color: #D3D3D3;
 }
 
-#kdmqacevir .gt_col_heading {
+#hvkdmhsdrf .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2274,7 +2308,7 @@ gtag('config', 'G-HYN1FKX625');
   overflow-x: hidden;
 }
 
-#kdmqacevir .gt_column_spanner_outer {
+#hvkdmhsdrf .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2286,15 +2320,15 @@ gtag('config', 'G-HYN1FKX625');
   padding-right: 4px;
 }
 
-#kdmqacevir .gt_column_spanner_outer:first-child {
+#hvkdmhsdrf .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#kdmqacevir .gt_column_spanner_outer:last-child {
+#hvkdmhsdrf .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#kdmqacevir .gt_column_spanner {
+#hvkdmhsdrf .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -2306,7 +2340,7 @@ gtag('config', 'G-HYN1FKX625');
   width: 100%;
 }
 
-#kdmqacevir .gt_group_heading {
+#hvkdmhsdrf .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2328,7 +2362,7 @@ gtag('config', 'G-HYN1FKX625');
   vertical-align: middle;
 }
 
-#kdmqacevir .gt_empty_group_heading {
+#hvkdmhsdrf .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2343,15 +2377,15 @@ gtag('config', 'G-HYN1FKX625');
   vertical-align: middle;
 }
 
-#kdmqacevir .gt_from_md > :first-child {
+#hvkdmhsdrf .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#kdmqacevir .gt_from_md > :last-child {
+#hvkdmhsdrf .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#kdmqacevir .gt_row {
+#hvkdmhsdrf .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2370,7 +2404,7 @@ gtag('config', 'G-HYN1FKX625');
   overflow-x: hidden;
 }
 
-#kdmqacevir .gt_stub {
+#hvkdmhsdrf .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2382,7 +2416,7 @@ gtag('config', 'G-HYN1FKX625');
   padding-left: 12px;
 }
 
-#kdmqacevir .gt_summary_row {
+#hvkdmhsdrf .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2392,7 +2426,7 @@ gtag('config', 'G-HYN1FKX625');
   padding-right: 5px;
 }
 
-#kdmqacevir .gt_first_summary_row {
+#hvkdmhsdrf .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2402,7 +2436,7 @@ gtag('config', 'G-HYN1FKX625');
   border-top-color: #D3D3D3;
 }
 
-#kdmqacevir .gt_grand_summary_row {
+#hvkdmhsdrf .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2412,7 +2446,7 @@ gtag('config', 'G-HYN1FKX625');
   padding-right: 5px;
 }
 
-#kdmqacevir .gt_first_grand_summary_row {
+#hvkdmhsdrf .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2422,11 +2456,11 @@ gtag('config', 'G-HYN1FKX625');
   border-top-color: #D3D3D3;
 }
 
-#kdmqacevir .gt_striped {
+#hvkdmhsdrf .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#kdmqacevir .gt_table_body {
+#hvkdmhsdrf .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2435,7 +2469,7 @@ gtag('config', 'G-HYN1FKX625');
   border-bottom-color: #D3D3D3;
 }
 
-#kdmqacevir .gt_footnotes {
+#hvkdmhsdrf .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2449,13 +2483,13 @@ gtag('config', 'G-HYN1FKX625');
   border-right-color: #D3D3D3;
 }
 
-#kdmqacevir .gt_footnote {
+#hvkdmhsdrf .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#kdmqacevir .gt_sourcenotes {
+#hvkdmhsdrf .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2469,41 +2503,41 @@ gtag('config', 'G-HYN1FKX625');
   border-right-color: #D3D3D3;
 }
 
-#kdmqacevir .gt_sourcenote {
+#hvkdmhsdrf .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#kdmqacevir .gt_left {
+#hvkdmhsdrf .gt_left {
   text-align: left;
 }
 
-#kdmqacevir .gt_center {
+#hvkdmhsdrf .gt_center {
   text-align: center;
 }
 
-#kdmqacevir .gt_right {
+#hvkdmhsdrf .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#kdmqacevir .gt_font_normal {
+#hvkdmhsdrf .gt_font_normal {
   font-weight: normal;
 }
 
-#kdmqacevir .gt_font_bold {
+#hvkdmhsdrf .gt_font_bold {
   font-weight: bold;
 }
 
-#kdmqacevir .gt_font_italic {
+#hvkdmhsdrf .gt_font_italic {
   font-style: italic;
 }
 
-#kdmqacevir .gt_super {
+#hvkdmhsdrf .gt_super {
   font-size: 65%;
 }
 
-#kdmqacevir .gt_footnote_marks {
+#hvkdmhsdrf .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 65%;
@@ -2678,11 +2712,16 @@ gtag('config', 'G-HYN1FKX625');
 </div>
 <p>Glimpse the data:</p>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span>
 <span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='va'>Batting</span><span class='op'>)</span>
 </code></pre>
 </div>
+</details>
 <pre><code>Rows: 108,789
 Columns: 22
 $ playerID &lt;chr&gt; &quot;abercda01&quot;, &quot;addybo01&quot;, &quot;allisar01&quot;, &quot;allisdo01&quot;, ~
@@ -2710,6 +2749,10 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
 </div>
 <p>We only want data from 2018 so we need to filter down and select the data points we want:</p>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>batting_2018</span> <span class='op'>&lt;-</span> <span class='va'>Batting</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>yearID</span> <span class='op'>==</span> <span class='fl'>2018</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
@@ -2717,12 +2760,13 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
 <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>batting_2018</span><span class='op'>)</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='https://gt.rstudio.com/reference/gt.html'>gt</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="fmrtpxxrfp" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+</details>
+<div id="aqyhxtzgth" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#fmrtpxxrfp .gt_table {
+#aqyhxtzgth .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -2747,7 +2791,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-left-color: #D3D3D3;
 }
 
-#fmrtpxxrfp .gt_heading {
+#aqyhxtzgth .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -2759,7 +2803,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-right-color: #D3D3D3;
 }
 
-#fmrtpxxrfp .gt_title {
+#aqyhxtzgth .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -2769,7 +2813,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-bottom-width: 0;
 }
 
-#fmrtpxxrfp .gt_subtitle {
+#aqyhxtzgth .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -2779,13 +2823,13 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-top-width: 0;
 }
 
-#fmrtpxxrfp .gt_bottom_border {
+#aqyhxtzgth .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#fmrtpxxrfp .gt_col_headings {
+#aqyhxtzgth .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2800,7 +2844,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-right-color: #D3D3D3;
 }
 
-#fmrtpxxrfp .gt_col_heading {
+#aqyhxtzgth .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2820,7 +2864,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   overflow-x: hidden;
 }
 
-#fmrtpxxrfp .gt_column_spanner_outer {
+#aqyhxtzgth .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2832,15 +2876,15 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   padding-right: 4px;
 }
 
-#fmrtpxxrfp .gt_column_spanner_outer:first-child {
+#aqyhxtzgth .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#fmrtpxxrfp .gt_column_spanner_outer:last-child {
+#aqyhxtzgth .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#fmrtpxxrfp .gt_column_spanner {
+#aqyhxtzgth .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -2852,7 +2896,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   width: 100%;
 }
 
-#fmrtpxxrfp .gt_group_heading {
+#aqyhxtzgth .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2874,7 +2918,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   vertical-align: middle;
 }
 
-#fmrtpxxrfp .gt_empty_group_heading {
+#aqyhxtzgth .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2889,15 +2933,15 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   vertical-align: middle;
 }
 
-#fmrtpxxrfp .gt_from_md > :first-child {
+#aqyhxtzgth .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#fmrtpxxrfp .gt_from_md > :last-child {
+#aqyhxtzgth .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#fmrtpxxrfp .gt_row {
+#aqyhxtzgth .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2916,7 +2960,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   overflow-x: hidden;
 }
 
-#fmrtpxxrfp .gt_stub {
+#aqyhxtzgth .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2928,7 +2972,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   padding-left: 12px;
 }
 
-#fmrtpxxrfp .gt_summary_row {
+#aqyhxtzgth .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2938,7 +2982,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   padding-right: 5px;
 }
 
-#fmrtpxxrfp .gt_first_summary_row {
+#aqyhxtzgth .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2948,7 +2992,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-top-color: #D3D3D3;
 }
 
-#fmrtpxxrfp .gt_grand_summary_row {
+#aqyhxtzgth .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2958,7 +3002,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   padding-right: 5px;
 }
 
-#fmrtpxxrfp .gt_first_grand_summary_row {
+#aqyhxtzgth .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2968,11 +3012,11 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-top-color: #D3D3D3;
 }
 
-#fmrtpxxrfp .gt_striped {
+#aqyhxtzgth .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#fmrtpxxrfp .gt_table_body {
+#aqyhxtzgth .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2981,7 +3025,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-bottom-color: #D3D3D3;
 }
 
-#fmrtpxxrfp .gt_footnotes {
+#aqyhxtzgth .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2995,13 +3039,13 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-right-color: #D3D3D3;
 }
 
-#fmrtpxxrfp .gt_footnote {
+#aqyhxtzgth .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#fmrtpxxrfp .gt_sourcenotes {
+#aqyhxtzgth .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -3015,41 +3059,41 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-right-color: #D3D3D3;
 }
 
-#fmrtpxxrfp .gt_sourcenote {
+#aqyhxtzgth .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#fmrtpxxrfp .gt_left {
+#aqyhxtzgth .gt_left {
   text-align: left;
 }
 
-#fmrtpxxrfp .gt_center {
+#aqyhxtzgth .gt_center {
   text-align: center;
 }
 
-#fmrtpxxrfp .gt_right {
+#aqyhxtzgth .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#fmrtpxxrfp .gt_font_normal {
+#aqyhxtzgth .gt_font_normal {
   font-weight: normal;
 }
 
-#fmrtpxxrfp .gt_font_bold {
+#aqyhxtzgth .gt_font_bold {
   font-weight: bold;
 }
 
-#fmrtpxxrfp .gt_font_italic {
+#aqyhxtzgth .gt_font_italic {
   font-style: italic;
 }
 
-#fmrtpxxrfp .gt_super {
+#aqyhxtzgth .gt_super {
   font-size: 65%;
 }
 
-#fmrtpxxrfp .gt_footnote_marks {
+#aqyhxtzgth .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 65%;
@@ -3189,6 +3233,10 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
 </ul>
 <p>The reason we are pulling extra data points like SH, SF, HBP, &amp; IBB is that in the end, we want Total At Bats. Baseball data is a little tricky in that only some plate appearances are considered an ‘At Bat’. Walks and sacrifices aren’t considered an ‘At Bat’ but for this analysis, we’ll want the total number of times they come to the plate in a season.</p>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>batting_2018</span> <span class='op'>&lt;-</span> <span class='va'>batting_2018</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>TBB <span class='op'>=</span> <span class='va'>BB</span> <span class='op'>+</span> <span class='va'>IBB</span> <span class='op'>+</span> <span class='va'>HBP</span>,         <span class='co'># combine all walk types</span>
@@ -3199,12 +3247,13 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
 <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>batting_2018</span><span class='op'>)</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='https://gt.rstudio.com/reference/gt.html'>gt</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="kqthjgdyqj" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+</details>
+<div id="fysqkvslbd" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#kqthjgdyqj .gt_table {
+#fysqkvslbd .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -3229,7 +3278,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-left-color: #D3D3D3;
 }
 
-#kqthjgdyqj .gt_heading {
+#fysqkvslbd .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -3241,7 +3290,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-right-color: #D3D3D3;
 }
 
-#kqthjgdyqj .gt_title {
+#fysqkvslbd .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -3251,7 +3300,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-bottom-width: 0;
 }
 
-#kqthjgdyqj .gt_subtitle {
+#fysqkvslbd .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -3261,13 +3310,13 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-top-width: 0;
 }
 
-#kqthjgdyqj .gt_bottom_border {
+#fysqkvslbd .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#kqthjgdyqj .gt_col_headings {
+#fysqkvslbd .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -3282,7 +3331,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-right-color: #D3D3D3;
 }
 
-#kqthjgdyqj .gt_col_heading {
+#fysqkvslbd .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3302,7 +3351,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   overflow-x: hidden;
 }
 
-#kqthjgdyqj .gt_column_spanner_outer {
+#fysqkvslbd .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3314,15 +3363,15 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   padding-right: 4px;
 }
 
-#kqthjgdyqj .gt_column_spanner_outer:first-child {
+#fysqkvslbd .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#kqthjgdyqj .gt_column_spanner_outer:last-child {
+#fysqkvslbd .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#kqthjgdyqj .gt_column_spanner {
+#fysqkvslbd .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -3334,7 +3383,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   width: 100%;
 }
 
-#kqthjgdyqj .gt_group_heading {
+#fysqkvslbd .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -3356,7 +3405,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   vertical-align: middle;
 }
 
-#kqthjgdyqj .gt_empty_group_heading {
+#fysqkvslbd .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -3371,15 +3420,15 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   vertical-align: middle;
 }
 
-#kqthjgdyqj .gt_from_md > :first-child {
+#fysqkvslbd .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#kqthjgdyqj .gt_from_md > :last-child {
+#fysqkvslbd .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#kqthjgdyqj .gt_row {
+#fysqkvslbd .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3398,7 +3447,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   overflow-x: hidden;
 }
 
-#kqthjgdyqj .gt_stub {
+#fysqkvslbd .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3410,7 +3459,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   padding-left: 12px;
 }
 
-#kqthjgdyqj .gt_summary_row {
+#fysqkvslbd .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -3420,7 +3469,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   padding-right: 5px;
 }
 
-#kqthjgdyqj .gt_first_summary_row {
+#fysqkvslbd .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3430,7 +3479,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-top-color: #D3D3D3;
 }
 
-#kqthjgdyqj .gt_grand_summary_row {
+#fysqkvslbd .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -3440,7 +3489,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   padding-right: 5px;
 }
 
-#kqthjgdyqj .gt_first_grand_summary_row {
+#fysqkvslbd .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3450,11 +3499,11 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-top-color: #D3D3D3;
 }
 
-#kqthjgdyqj .gt_striped {
+#fysqkvslbd .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#kqthjgdyqj .gt_table_body {
+#fysqkvslbd .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -3463,7 +3512,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-bottom-color: #D3D3D3;
 }
 
-#kqthjgdyqj .gt_footnotes {
+#fysqkvslbd .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -3477,13 +3526,13 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-right-color: #D3D3D3;
 }
 
-#kqthjgdyqj .gt_footnote {
+#fysqkvslbd .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#kqthjgdyqj .gt_sourcenotes {
+#fysqkvslbd .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -3497,41 +3546,41 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-right-color: #D3D3D3;
 }
 
-#kqthjgdyqj .gt_sourcenote {
+#fysqkvslbd .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#kqthjgdyqj .gt_left {
+#fysqkvslbd .gt_left {
   text-align: left;
 }
 
-#kqthjgdyqj .gt_center {
+#fysqkvslbd .gt_center {
   text-align: center;
 }
 
-#kqthjgdyqj .gt_right {
+#fysqkvslbd .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#kqthjgdyqj .gt_font_normal {
+#fysqkvslbd .gt_font_normal {
   font-weight: normal;
 }
 
-#kqthjgdyqj .gt_font_bold {
+#fysqkvslbd .gt_font_bold {
   font-weight: bold;
 }
 
-#kqthjgdyqj .gt_font_italic {
+#fysqkvslbd .gt_font_italic {
   font-style: italic;
 }
 
-#kqthjgdyqj .gt_super {
+#fysqkvslbd .gt_super {
   font-size: 65%;
 }
 
-#kqthjgdyqj .gt_footnote_marks {
+#fysqkvslbd .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 65%;
@@ -3630,6 +3679,10 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
 <h1 id="eda">EDA</h1>
 <p>Let’s do some EDA on our data:</p>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='http://boxuancui.github.io/DataExplorer/'>DataExplorer</a></span><span class='op'>)</span>
 <span class='fu'>DataExplorer</span><span class='fu'>::</span><span class='fu'><a href='http://boxuancui.github.io/DataExplorer/reference/profile_missing.html'>profile_missing</a></span><span class='op'>(</span><span class='va'>batting_2018</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
@@ -3637,12 +3690,13 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   <span class='fu'><a href='https://gt.rstudio.com/reference/gt.html'>gt</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="schhasxwze" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+</details>
+<div id="ztbkocjqee" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#schhasxwze .gt_table {
+#ztbkocjqee .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -3667,7 +3721,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-left-color: #D3D3D3;
 }
 
-#schhasxwze .gt_heading {
+#ztbkocjqee .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -3679,7 +3733,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-right-color: #D3D3D3;
 }
 
-#schhasxwze .gt_title {
+#ztbkocjqee .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -3689,7 +3743,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-bottom-width: 0;
 }
 
-#schhasxwze .gt_subtitle {
+#ztbkocjqee .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -3699,13 +3753,13 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-top-width: 0;
 }
 
-#schhasxwze .gt_bottom_border {
+#ztbkocjqee .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#schhasxwze .gt_col_headings {
+#ztbkocjqee .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -3720,7 +3774,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-right-color: #D3D3D3;
 }
 
-#schhasxwze .gt_col_heading {
+#ztbkocjqee .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3740,7 +3794,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   overflow-x: hidden;
 }
 
-#schhasxwze .gt_column_spanner_outer {
+#ztbkocjqee .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3752,15 +3806,15 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   padding-right: 4px;
 }
 
-#schhasxwze .gt_column_spanner_outer:first-child {
+#ztbkocjqee .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#schhasxwze .gt_column_spanner_outer:last-child {
+#ztbkocjqee .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#schhasxwze .gt_column_spanner {
+#ztbkocjqee .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -3772,7 +3826,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   width: 100%;
 }
 
-#schhasxwze .gt_group_heading {
+#ztbkocjqee .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -3794,7 +3848,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   vertical-align: middle;
 }
 
-#schhasxwze .gt_empty_group_heading {
+#ztbkocjqee .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -3809,15 +3863,15 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   vertical-align: middle;
 }
 
-#schhasxwze .gt_from_md > :first-child {
+#ztbkocjqee .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#schhasxwze .gt_from_md > :last-child {
+#ztbkocjqee .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#schhasxwze .gt_row {
+#ztbkocjqee .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3836,7 +3890,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   overflow-x: hidden;
 }
 
-#schhasxwze .gt_stub {
+#ztbkocjqee .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3848,7 +3902,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   padding-left: 12px;
 }
 
-#schhasxwze .gt_summary_row {
+#ztbkocjqee .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -3858,7 +3912,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   padding-right: 5px;
 }
 
-#schhasxwze .gt_first_summary_row {
+#ztbkocjqee .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3868,7 +3922,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-top-color: #D3D3D3;
 }
 
-#schhasxwze .gt_grand_summary_row {
+#ztbkocjqee .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -3878,7 +3932,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   padding-right: 5px;
 }
 
-#schhasxwze .gt_first_grand_summary_row {
+#ztbkocjqee .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3888,11 +3942,11 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-top-color: #D3D3D3;
 }
 
-#schhasxwze .gt_striped {
+#ztbkocjqee .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#schhasxwze .gt_table_body {
+#ztbkocjqee .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -3901,7 +3955,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-bottom-color: #D3D3D3;
 }
 
-#schhasxwze .gt_footnotes {
+#ztbkocjqee .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -3915,13 +3969,13 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-right-color: #D3D3D3;
 }
 
-#schhasxwze .gt_footnote {
+#ztbkocjqee .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#schhasxwze .gt_sourcenotes {
+#ztbkocjqee .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -3935,41 +3989,41 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-right-color: #D3D3D3;
 }
 
-#schhasxwze .gt_sourcenote {
+#ztbkocjqee .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#schhasxwze .gt_left {
+#ztbkocjqee .gt_left {
   text-align: left;
 }
 
-#schhasxwze .gt_center {
+#ztbkocjqee .gt_center {
   text-align: center;
 }
 
-#schhasxwze .gt_right {
+#ztbkocjqee .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#schhasxwze .gt_font_normal {
+#ztbkocjqee .gt_font_normal {
   font-weight: normal;
 }
 
-#schhasxwze .gt_font_bold {
+#ztbkocjqee .gt_font_bold {
   font-weight: bold;
 }
 
-#schhasxwze .gt_font_italic {
+#ztbkocjqee .gt_font_italic {
   font-style: italic;
 }
 
-#schhasxwze .gt_super {
+#ztbkocjqee .gt_super {
   font-size: 65%;
 }
 
-#schhasxwze .gt_footnote_marks {
+#ztbkocjqee .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 65%;
@@ -4026,37 +4080,61 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
 </div>
 <p>No missing data. Let’s look at the distributions:</p>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>DataExplorer</span><span class='fu'>::</span><span class='fu'><a href='http://boxuancui.github.io/DataExplorer/reference/plot_bar.html'>plot_bar</a></span><span class='op'>(</span><span class='va'>batting_2018</span>, ncol <span class='op'>=</span> <span class='fl'>4</span>, nrow <span class='op'>=</span> <span class='fl'>4</span><span class='op'>)</span>
 </code></pre>
 </div>
+</details>
 <img src="customer-segmentationwith-mlb-players_files/figure-html5/unnamed-chunk-4-1.png" width="624" />
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>DataExplorer</span><span class='fu'>::</span><span class='fu'><a href='http://boxuancui.github.io/DataExplorer/reference/plot_histogram.html'>plot_histogram</a></span><span class='op'>(</span><span class='va'>batting_2018</span>, ncol <span class='op'>=</span> <span class='fl'>4</span>, nrow <span class='op'>=</span> <span class='fl'>4</span><span class='op'>)</span>
 </code></pre>
 </div>
+</details>
 <p><img src="customer-segmentationwith-mlb-players_files/figure-html5/unnamed-chunk-4-2.png" width="624" /></p>
 </div>
 <p>A LOT of zero values. We need to figure out a good minimum for the number of games played a hitter needs to be included in our analysis. For this, instead of using analysis, I’m going to use business logic and require a player to have at least appeared in 100 games in the 2018 season.</p>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>batting_2018</span> <span class='op'>&lt;-</span> <span class='va'>batting_2018</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>G</span> <span class='op'>&gt;=</span> <span class='fl'>100</span><span class='op'>)</span>
 </code></pre>
 </div>
+</details>
 </div>
 <p>Look at the distributions again:</p>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>DataExplorer</span><span class='fu'>::</span><span class='fu'><a href='http://boxuancui.github.io/DataExplorer/reference/plot_histogram.html'>plot_histogram</a></span><span class='op'>(</span><span class='va'>batting_2018</span>, ncol <span class='op'>=</span> <span class='fl'>4</span>, nrow <span class='op'>=</span> <span class='fl'>4</span><span class='op'>)</span>
 </code></pre>
 </div>
+</details>
 <p><img src="customer-segmentationwith-mlb-players_files/figure-html5/unnamed-chunk-6-1.png" width="624" /></p>
 </div>
 <p>Much better. Most distributions (other than triples) are looking a lot more normal. Triples happen so infrequently that I’m going to combine them with doubles and call them extra-base hits.</p>
 <p>In cluster analysis, it’s important to get all data points on the same scale. If you run the unscaled data through the kmeans algorithm it will potentially over-emphasize a variable that is on a larger scale. In retail this is common. If you have the number of times visited the store and dollars per visit then the kmeans algorithm will over-emphasize dollars per visit because it could potentially be in the hundreds or thousands of dollars while visits are only in the single and double-digit range.</p>
 <p>In this example, we have to take an extra step before we scale. We want to make everything a per-at-bat level. This will let us know the percentage of times a player walks, gets a hit, etc then we will scale each variable. This could also be done for retail data and transforming the data at a per-visit level.</p>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>batting_2018</span> <span class='op'>&lt;-</span> <span class='va'>batting_2018</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>XBH <span class='op'>=</span> <span class='va'>X2B</span> <span class='op'>+</span> <span class='va'>X3B</span>,
@@ -4075,12 +4153,13 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
 <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>batting_2018</span><span class='op'>)</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='https://gt.rstudio.com/reference/gt.html'>gt</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="ewvrkiqtgw" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+</details>
+<div id="runtdccatv" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#ewvrkiqtgw .gt_table {
+#runtdccatv .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -4105,7 +4184,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-left-color: #D3D3D3;
 }
 
-#ewvrkiqtgw .gt_heading {
+#runtdccatv .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -4117,7 +4196,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-right-color: #D3D3D3;
 }
 
-#ewvrkiqtgw .gt_title {
+#runtdccatv .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -4127,7 +4206,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-bottom-width: 0;
 }
 
-#ewvrkiqtgw .gt_subtitle {
+#runtdccatv .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -4137,13 +4216,13 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-top-width: 0;
 }
 
-#ewvrkiqtgw .gt_bottom_border {
+#runtdccatv .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#ewvrkiqtgw .gt_col_headings {
+#runtdccatv .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -4158,7 +4237,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-right-color: #D3D3D3;
 }
 
-#ewvrkiqtgw .gt_col_heading {
+#runtdccatv .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -4178,7 +4257,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   overflow-x: hidden;
 }
 
-#ewvrkiqtgw .gt_column_spanner_outer {
+#runtdccatv .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -4190,15 +4269,15 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   padding-right: 4px;
 }
 
-#ewvrkiqtgw .gt_column_spanner_outer:first-child {
+#runtdccatv .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#ewvrkiqtgw .gt_column_spanner_outer:last-child {
+#runtdccatv .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#ewvrkiqtgw .gt_column_spanner {
+#runtdccatv .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -4210,7 +4289,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   width: 100%;
 }
 
-#ewvrkiqtgw .gt_group_heading {
+#runtdccatv .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -4232,7 +4311,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   vertical-align: middle;
 }
 
-#ewvrkiqtgw .gt_empty_group_heading {
+#runtdccatv .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -4247,15 +4326,15 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   vertical-align: middle;
 }
 
-#ewvrkiqtgw .gt_from_md > :first-child {
+#runtdccatv .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#ewvrkiqtgw .gt_from_md > :last-child {
+#runtdccatv .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#ewvrkiqtgw .gt_row {
+#runtdccatv .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4274,7 +4353,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   overflow-x: hidden;
 }
 
-#ewvrkiqtgw .gt_stub {
+#runtdccatv .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -4286,7 +4365,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   padding-left: 12px;
 }
 
-#ewvrkiqtgw .gt_summary_row {
+#runtdccatv .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -4296,7 +4375,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   padding-right: 5px;
 }
 
-#ewvrkiqtgw .gt_first_summary_row {
+#runtdccatv .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4306,7 +4385,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-top-color: #D3D3D3;
 }
 
-#ewvrkiqtgw .gt_grand_summary_row {
+#runtdccatv .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -4316,7 +4395,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   padding-right: 5px;
 }
 
-#ewvrkiqtgw .gt_first_grand_summary_row {
+#runtdccatv .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4326,11 +4405,11 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-top-color: #D3D3D3;
 }
 
-#ewvrkiqtgw .gt_striped {
+#runtdccatv .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#ewvrkiqtgw .gt_table_body {
+#runtdccatv .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -4339,7 +4418,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-bottom-color: #D3D3D3;
 }
 
-#ewvrkiqtgw .gt_footnotes {
+#runtdccatv .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -4353,13 +4432,13 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-right-color: #D3D3D3;
 }
 
-#ewvrkiqtgw .gt_footnote {
+#runtdccatv .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#ewvrkiqtgw .gt_sourcenotes {
+#runtdccatv .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -4373,41 +4452,41 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   border-right-color: #D3D3D3;
 }
 
-#ewvrkiqtgw .gt_sourcenote {
+#runtdccatv .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#ewvrkiqtgw .gt_left {
+#runtdccatv .gt_left {
   text-align: left;
 }
 
-#ewvrkiqtgw .gt_center {
+#runtdccatv .gt_center {
   text-align: center;
 }
 
-#ewvrkiqtgw .gt_right {
+#runtdccatv .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#ewvrkiqtgw .gt_font_normal {
+#runtdccatv .gt_font_normal {
   font-weight: normal;
 }
 
-#ewvrkiqtgw .gt_font_bold {
+#runtdccatv .gt_font_bold {
   font-weight: bold;
 }
 
-#ewvrkiqtgw .gt_font_italic {
+#runtdccatv .gt_font_italic {
   font-style: italic;
 }
 
-#ewvrkiqtgw .gt_super {
+#runtdccatv .gt_super {
   font-size: 65%;
 }
 
-#ewvrkiqtgw .gt_footnote_marks {
+#runtdccatv .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 65%;
@@ -4591,33 +4670,52 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
 <p>We have the data prepped and scaled so we are ready to run it through the kmeans algorithm. The tricky part of cluster analysis via kmeans is kmeans forces the user to select the number of clusters (k). Our first task is determining k and there are a few ways to do this. The three methods I will showcase is called the elbow method, silhouette scores, and gap statistic.</p>
 <h3 id="elbow-method">Elbow Method</h3>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='http://www.sthda.com/english/rpkgs/factoextra'>factoextra</a></span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/pkg/factoextra/man/fviz_nbclust.html'>fviz_nbclust</a></span><span class='op'>(</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>batting_2018</span>, <span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>contains</a></span><span class='op'>(</span><span class='st'>'scaled'</span><span class='op'>)</span><span class='op'>)</span>, <span class='va'>kmeans</span>, method <span class='op'>=</span> <span class='st'>"wss"</span><span class='op'>)</span>
 </code></pre>
 </div>
+</details>
 <p><img src="customer-segmentationwith-mlb-players_files/figure-html5/determining-k-1.png" width="624" /></p>
 </div>
 <p>The elbow method plots the total within sum of square errors. The way kmeans works guarantees that the tot.withinss will always decrease with an increase in clusters. Our goal isn’t to find the lowest tot.withinss but to find the point of diminishing returns or the ‘elbow’ point in the graph. The elbow seems to be at 4 clusters.</p>
 <h2 id="silhouette-method">Silhouette Method</h2>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/pkg/factoextra/man/fviz_nbclust.html'>fviz_nbclust</a></span><span class='op'>(</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>batting_2018</span>, <span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>contains</a></span><span class='op'>(</span><span class='st'>'scaled'</span><span class='op'>)</span><span class='op'>)</span>, <span class='va'>kmeans</span>, method <span class='op'>=</span> <span class='st'>"silhouette"</span><span class='op'>)</span>
 </code></pre>
 </div>
+</details>
 <p><img src="customer-segmentationwith-mlb-players_files/figure-html5/unnamed-chunk-8-1.png" width="624" /></p>
 </div>
 <p>This method suggests 2 with 3 being close behind.</p>
 <h2 id="gap-statistic">Gap Statistic</h2>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/pkg/factoextra/man/fviz_nbclust.html'>fviz_nbclust</a></span><span class='op'>(</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>batting_2018</span>, <span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>contains</a></span><span class='op'>(</span><span class='st'>'scaled'</span><span class='op'>)</span><span class='op'>)</span>, <span class='va'>kmeans</span>, method <span class='op'>=</span> <span class='st'>"gap_stat"</span><span class='op'>)</span>
 </code></pre>
 </div>
+</details>
 <p><img src="customer-segmentationwith-mlb-players_files/figure-html5/unnamed-chunk-9-1.png" width="624" /></p>
 </div>
 <p>The gap statistic suggests 1 cluster. Unfortunately the methods don’t all agree which is usually the case when doing this analysis out in the wild. Fortunately we can visualize the clusters. We are going to only visualize 3 and 4 clusters because 2 clusters wouldn’t be informative enough to give us any insights.</p>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>123</span><span class='op'>)</span>
 <span class='va'>k3</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/kmeans.html'>kmeans</a></span><span class='op'>(</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>batting_2018</span>, <span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>contains</a></span><span class='op'>(</span><span class='st'>'scaled'</span><span class='op'>)</span><span class='op'>)</span>, <span class='fl'>3</span>, nstart <span class='op'>=</span> <span class='fl'>25</span><span class='op'>)</span>
@@ -4625,15 +4723,25 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
 <span class='fu'><a href='https://rdrr.io/pkg/factoextra/man/fviz_cluster.html'>fviz_cluster</a></span><span class='op'>(</span><span class='va'>k3</span>, data <span class='op'>=</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>batting_2018</span>, <span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>contains</a></span><span class='op'>(</span><span class='st'>'scaled'</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
+</details>
 <img src="customer-segmentationwith-mlb-players_files/figure-html5/unnamed-chunk-10-1.png" width="624" />
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/pkg/factoextra/man/fviz_cluster.html'>fviz_cluster</a></span><span class='op'>(</span><span class='va'>k4</span>, data <span class='op'>=</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>batting_2018</span>, <span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>contains</a></span><span class='op'>(</span><span class='st'>'scaled'</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
+</details>
 <p><img src="customer-segmentationwith-mlb-players_files/figure-html5/unnamed-chunk-10-2.png" width="624" /></p>
 </div>
 <p>Not great separation so it’s understandable that none of the methods agreed on a specific k but I like 4 clusters so we are going to go with that. Let’s join the clusters back to the data and see if we can determine the types of hitters in each cluster. Remember since we scaled the data we are looking at standard scores or z-scores. A z-score of 0 means average for that stat, the more positive means the more above average and vice-versa for negative scores.</p>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>batting_2018</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>cluster <span class='op'>=</span> <span class='va'>k4</span><span class='op'>$</span><span class='va'>cluster</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
@@ -4647,6 +4755,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   <span class='fu'><a href='https://gt.rstudio.com/reference/gt.html'>gt</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
+</details>
 <div id="xtogdahtyp" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
@@ -5035,6 +5144,10 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
 </div>
 <p>Let’s visualize these clusters with some bar charts. Might be easier to digest.</p>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidyr.tidyverse.org'>tidyr</a></span><span class='op'>)</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://ggplot2.tidyverse.org'>ggplot2</a></span><span class='op'>)</span>
@@ -5056,6 +5169,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/facet_wrap.html'>facet_wrap</a></span><span class='op'>(</span>facets <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/vars.html'>vars</a></span><span class='op'>(</span><span class='va'>cluster</span><span class='op'>)</span>, nrow <span class='op'>=</span> <span class='fl'>2</span>, ncol <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
 </code></pre>
 </div>
+</details>
 <p><img src="customer-segmentationwith-mlb-players_files/figure-html5/unnamed-chunk-12-1.png" width="624" /></p>
 </div>
 <p>Cluster 1 = high walks, high strikeouts, low singles, low extras, high homeruns</p>
@@ -5065,6 +5179,10 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
 <p>Let’s give them names.</p>
 <h3 id="cluster-1-the-three-true-outcome-hitters">Cluster 1 = The Three True Outcome Hitters</h3>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>batting_2018</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>cluster <span class='op'>=</span> <span class='va'>k4</span><span class='op'>$</span><span class='va'>cluster</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
@@ -5085,10 +5203,15 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>ggtitle</a></span><span class='op'>(</span>label <span class='op'>=</span> <span class='st'>"The Three True Outcome Hitters"</span><span class='op'>)</span>
 </code></pre>
 </div>
+</details>
 <p><img src="customer-segmentationwith-mlb-players_files/figure-html5/unnamed-chunk-13-1.png" width="624" /></p>
 </div>
 <p>These hitters are already known in the baseball world and have been give a name because every at bat results in one of the ‘Three True Outcomes’ which are Walk, Strikeout, Home Run. Examples of this type of hitter is Aaron Judge and Bryce Harper. Let’s see if they ended up in cluster 1.</p>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='co'>#Aaron Judge, Bryce Harper</span>
 <span class='va'>batting_2018</span> <span class='op'>%&gt;%</span>
@@ -5105,10 +5228,15 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>ggtitle</a></span><span class='op'>(</span>label <span class='op'>=</span> <span class='st'>"Bryce Harper and Aaron Judge"</span><span class='op'>)</span>
 </code></pre>
 </div>
+</details>
 <p><img src="customer-segmentationwith-mlb-players_files/figure-html5/unnamed-chunk-14-1.png" width="624" /></p>
 </div>
 <p>Let’s check the other hitters in this cluster:</p>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>batting_2018</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>cluster <span class='op'>=</span> <span class='va'>k4</span><span class='op'>$</span><span class='va'>cluster</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
@@ -5127,11 +5255,16 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>ggtitle</a></span><span class='op'>(</span>label <span class='op'>=</span> <span class='st'>"The Three True Outcome Hitters"</span><span class='op'>)</span>
 </code></pre>
 </div>
+</details>
 <p><img src="customer-segmentationwith-mlb-players_files/figure-html5/unnamed-chunk-15-1.png" width="624" /></p>
 </div>
 <p>All of these are pretty good examples of ‘Three True Outcome’ hitters except Carlos Santana (santaca01). His defining attribute is that he draws a ton of walks, but he doesn’t strikeout or hit above average home runs so he is not a great fit for this category. The most likely reason he was put in here is because he fits the walk profile of this group and doesn’t belong in any of the other groups either.</p>
 <h3 id="cluster-2-all-around-good-hitters">Cluster 2 = All Around Good Hitters</h3>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>batting_2018</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>cluster <span class='op'>=</span> <span class='va'>k4</span><span class='op'>$</span><span class='va'>cluster</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
@@ -5152,10 +5285,15 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>ggtitle</a></span><span class='op'>(</span>label <span class='op'>=</span> <span class='st'>"All Around Good Hitters"</span><span class='op'>)</span>
 </code></pre>
 </div>
+</details>
 <p><img src="customer-segmentationwith-mlb-players_files/figure-html5/unnamed-chunk-16-1.png" width="624" /></p>
 </div>
 <p>They don’t have a weak area, walk enough, hit a lot of singles and have power by hitting a lot of homeruns. These are the well-rounded great hitters. We would expect the MVP winner Mookie Betts to be in this category. He might well be the most well-rounded hitter in the MLB with almost no weaknesses.</p>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='co'>#Mookie Betts</span>
 <span class='va'>batting_2018</span> <span class='op'>%&gt;%</span>
@@ -5172,10 +5310,15 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>ggtitle</a></span><span class='op'>(</span>label <span class='op'>=</span> <span class='st'>"Mookie Betts"</span><span class='op'>)</span>
 </code></pre>
 </div>
+</details>
 <p><img src="customer-segmentationwith-mlb-players_files/figure-html5/unnamed-chunk-17-1.png" width="624" /></p>
 </div>
 <p>Look at those z-scores for Mookie. Incredible.</p>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>batting_2018</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>cluster <span class='op'>=</span> <span class='va'>k4</span><span class='op'>$</span><span class='va'>cluster</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
@@ -5194,11 +5337,16 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>ggtitle</a></span><span class='op'>(</span>label <span class='op'>=</span> <span class='st'>"All Around Good Hitters"</span><span class='op'>)</span>
 </code></pre>
 </div>
+</details>
 <p><img src="customer-segmentationwith-mlb-players_files/figure-html5/unnamed-chunk-18-1.png" width="624" /></p>
 </div>
 <p>All of the hitters shown above are great hitters. This is good to see.</p>
 <h3 id="cluster-3-weak-hitters">Cluster 3 = Weak Hitters</h3>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>batting_2018</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>cluster <span class='op'>=</span> <span class='va'>k4</span><span class='op'>$</span><span class='va'>cluster</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
@@ -5219,10 +5367,15 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>ggtitle</a></span><span class='op'>(</span>label <span class='op'>=</span> <span class='st'>"Weak Hitters"</span><span class='op'>)</span>
 </code></pre>
 </div>
+</details>
 <p><img src="customer-segmentationwith-mlb-players_files/figure-html5/unnamed-chunk-19-1.png" width="624" /></p>
 </div>
 <p>These batters struggle getting on base (Walks) and strikeout a lot. These are the weak hitters that are most likely at the bottom of the batting order. Most of these names would not be familiar to casual MLB fans.</p>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>batting_2018</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>cluster <span class='op'>=</span> <span class='va'>k4</span><span class='op'>$</span><span class='va'>cluster</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
@@ -5241,10 +5394,15 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>ggtitle</a></span><span class='op'>(</span>label <span class='op'>=</span> <span class='st'>"Weak Hitters"</span><span class='op'>)</span>
 </code></pre>
 </div>
+</details>
 <p><img src="customer-segmentationwith-mlb-players_files/figure-html5/unnamed-chunk-20-1.png" width="624" /></p>
 </div>
 <h3 id="cluster-4-balls-in-play">Cluster 4 = Balls-in-Play</h3>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>batting_2018</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>cluster <span class='op'>=</span> <span class='va'>k4</span><span class='op'>$</span><span class='va'>cluster</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
@@ -5265,10 +5423,15 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>ggtitle</a></span><span class='op'>(</span>label <span class='op'>=</span> <span class='st'>"Balls-in-Play"</span><span class='op'>)</span>
 </code></pre>
 </div>
+</details>
 <p><img src="customer-segmentationwith-mlb-players_files/figure-html5/unnamed-chunk-21-1.png" width="624" /></p>
 </div>
 <p>They don’t walk, they don’t strikeout, and they don’t hit home runs. They just put the ball in play in most at bats.</p>
 <div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Show code
+</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>batting_2018</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>cluster <span class='op'>=</span> <span class='va'>k4</span><span class='op'>$</span><span class='va'>cluster</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
@@ -5287,6 +5450,7 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>ggtitle</a></span><span class='op'>(</span>label <span class='op'>=</span> <span class='st'>"Balls-in-Play"</span><span class='op'>)</span>
 </code></pre>
 </div>
+</details>
 <p><img src="customer-segmentationwith-mlb-players_files/figure-html5/unnamed-chunk-22-1.png" width="624" /></p>
 </div>
 <p>Nick Markakis is a great example of these cluster. He walks slightly above average, almost never strikes out, a ton of singles and extras with well below average home runs.</p>
@@ -5294,6 +5458,38 @@ $ GIDP     &lt;int&gt; 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 1, 2, 0, ~</cod
 <p>We went through the process of getting the customer data (MLB hitting data), exploring the missing values and distributions, scaling the data, determining an appropriate k using three different methods and then interpreting and validating our segments. The next step is to start using our new-found segments to gain insights on things like roster construction and position importance.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
+<div class="article-footer">
+  <p class="social_footer">
+    <span class="disqus-comments">
+      <i class="fas fa-comments"></i>
+      &nbsp;
+      <span class="disqus-comment-count" data-disqus-identifier="posts/2021-06-18-customer-segmentationwith-mlb-players/">Comment on this article</span>
+    </span>
+    <span class="article-sharing">
+      Share: &nbsp;
+      <a href="https://twitter.com/share?text=Customer%20Segmentation...with%20MLB%20players%20Pt.%201&amp;url=https%3A%2F%2Fthelob.blog%2Fposts%2F2021-06-18-customer-segmentationwith-mlb-players%2F">
+        <i class="fab fa-twitter"></i>
+      </a>
+      <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3A%2F%2Fthelob.blog%2Fposts%2F2021-06-18-customer-segmentationwith-mlb-players%2F&amp;title=Customer%20Segmentation...with%20MLB%20players%20Pt.%201">
+        <i class="fab fa-linkedin"></i>
+      </a>
+    </span>
+  </p>
+  <script id="dsq-count-scr" src="https://the-lob-blog.disqus.com/count.js" async></script>
+  <div id="disqus_thread" class="hidden"></div>
+  <script type="text/javascript" cookie-consent="functionality">
+var disqus_config = function () {
+  this.page.url = 'https://thelob.blog/posts/2021-06-18-customer-segmentationwith-mlb-players/';
+  this.page.identifier = 'posts/2021-06-18-customer-segmentationwith-mlb-players/';
+};
+(function() {
+  var d = document, s = d.createElement('script');
+  s.src = 'https://the-lob-blog.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', +new Date());
+  (d.head || d.body).appendChild(s);
+})();
+</script>
+</div>
 <!--/radix_placeholder_article_footer-->
 </div>
 

@@ -3,6 +3,10 @@ title: "Louis Oberdiear"
 description: |
   The Louis Oberdiear (LOB) Blog.
 base_url: https://thelob.blog
+collections:
+  posts:
+    disqus: the-lob-blog
+    share: [twitter, linkedin]
 output_dir: "_site"
 repository_url: https://github.com/stlouiso/blog
 google_analytics: "G-HYN1FKX625"

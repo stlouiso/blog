@@ -13,14 +13,14 @@
       "title": "Posts",
       "author": [],
       "contents": "\r\n\r\n\r\n  window.dataLayer = window.dataLayer || [];\r\n  function gtag(){dataLayer.push(arguments);}\r\n  gtag('js', new Date());\r\n\r\n  gtag('config', 'G-HYN1FKX625');\r\n\r\n\r\n\r\n",
-      "last_modified": "2021-07-07T20:08:50-05:00"
+      "last_modified": "2021-07-15T15:52:59-05:00"
     },
     {
       "path": "resources.html",
       "title": "Resources",
       "author": [],
-      "contents": "\r\n\r\nContents\r\nPeople, Blogs etc.\r\n\r\nList of resources I utilize to find new blogs/new packages for #RStats.\r\nPeople, Blogs etc.\r\nThomase Mock’s The Mockup Blog\r\nElla Kaye’s Blog\r\nRStudio\r\nR-bloggers\r\nR Views\r\nPosts You Might Have Missed\r\n\r\n\r\n\r\n",
-      "last_modified": "2021-07-07T19:57:46-05:00"
+      "contents": "\r\n\r\nContents\r\nPeople, Blogs etc.\r\nModeling\r\nEDA Packages\r\n\r\nList of resources I utilize to find new blogs/new packages for #RStats.\r\nPeople, Blogs etc.\r\nThomase Mock’s The Mockup Blog\r\nElla Kaye’s Blog\r\nRStudio\r\nR-bloggers\r\nR Views\r\nPosts You Might Have Missed\r\nModeling\r\nTidy Models bookdown TMRW\r\nEDA Packages\r\nDataExplorer\r\nSkimr\r\nCorrplot\r\nCorrr\r\n\r\n\r\n\r\n",
+      "last_modified": "2021-07-16T20:20:23-05:00"
     }
   ],
   "collections": ["posts/posts.json"]
