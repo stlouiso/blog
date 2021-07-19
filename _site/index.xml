@@ -12,7 +12,7 @@
       <title>Predicting Customer Tenure...with MLB Hitters</title>
       <dc:creator>Louis Oberdiear</dc:creator>
       <link>https://thelob.blog/posts/2021-07-08-predicting-customer-tenurewith-mlb-hitters</link>
-      <description>How will long will a customer stay with our business or, in this case, how long will a MLB hitter stay in the MLB? In this post, I go through the value of knowing how long a customer will be with an organization, EDA of MLB data, how to clean and setup data for modeling, fitting a linear model and a gradient boosted tree model with xgBoost.</description>
+      <description>How long will a customer stay with our business or, in this case, how long will an MLB hitter stay in the MLB? In this post, I go through the value of knowing how long a customer will be with an organization, EDA of MLB data, how to clean and setup data for modeling, and how to fit a linear model and a gradient boosted tree model with xgBoost.</description>
       <category>customer tenure</category>
       <category>customer lifetime value</category>
       <category>customer series</category>
