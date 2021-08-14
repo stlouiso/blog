@@ -1,0 +1,415 @@
+---
+title: "Introducing xp_wOBA (Expected Pitch wOBA)"
+description: |
+  In this post, I created a new performance metric for both hitters and pitchers called xp_wOBA (Expected Pitch wOBA). It's a new metric to determine a single pitch's quality. It takes into account release speed, pitch location, hitter's count, pitch movement, etc. to determine the quality of a pitch. 
+author:
+  - name: Louis Oberdiear
+    url: thelob.blog/louisoberdiear
+date: 07-28-2021
+preview: strike_zone.png
+output:
+  distill::distill_article:
+    toc: true
+    code_folding: true
+    highlight: default
+    self_contained: false
+---
+
+# Motivation
+The primary motivation is to create a metric that attempts to measure a pitch's quality for a given situation. A pitch that is high and inside is a bad pitch when the hitter has a count of 3 balls and 1 strike because if the hitter does not swing then they get a free base via a walk. That same pitch is a good pitch when the hitter has 0 balls and 2 strikes because if the hitter swings, they are likely to either miss or hit the ball weakly. If they don't swing then they simply have one ball now. Almost no harm was done. 
+
+If we can estimate the quality of a pitch then this opens the door to more accurately judge both batters and pitchers. We can use this metric to determine if a pitcher was making quality pitches throughout an appearance that is not focused on outcome metrics like Earned Run Average (ERA). A pitcher can make a great pitch that is hit for a home run. Is it fair to judge the pitcher poorly because the batter put a great swing on a difficult-to-hit pitch? 
+
+The same goes for hitters. With this metric, we can judge who is hitting better than expected given the quality of pitches they are seeing. This is in a very similar vein as [Completion Percentage Over Expected (CPOE)](https://www.nfl.com/news/next-gen-stats-intro-to-completion-probability-part-ii-0ap3000000967238). A batter might only see high-quality pitches (i.e. difficult to hit pitches) in a given at-bat, but again, should we judge them harshly?
+
+This metric helps us be more process-driven and less outcome-driven.
+
+# Why wOBA?
+The outcome the model is going to be trained on is the wOBA value for a given event. For a full primer, read this FanGraphs article on [wOBA](https://library.fangraphs.com/offense/woba/). Each batting event has a given wOBA value (these are subject to change for a given year):
+
+| Event | wOBA value |
+|-------|------------|
+| walk | 0.70 |
+| hit by pitch | 0.70 |
+| field error | 0.90 |
+| single | 0.90 |
+| double | 1.25 |
+| triple | 1.60 |
+| home run | 2.00 |
+| all other | 0.00 |
+
+As the article above states, not all hits are created equal. A walk doesn't have the same value as a single and a single doesn't have the same value as a home run. Yet, metrics like batting average and on-base percentage treat them equally. While slugging percentage does weight hits, it does so by total bases which exaggerate the value of doubles, triples, and home runs. 
+
+By using this metric that captures the value of a batting event accurately then we can more accurately judge the value of a given pitch (e.g. a pitch in this location, at this speed, in this count, has an expected value of *x*). A pitch is of high quality if the expected value is low. 
+
+# Data  
+I'm going to be using 2019 data scraped from [https://baseballsavant.mlb.com/statcast_search](https://baseballsavant.mlb.com/statcast_search) using the code below.
+
+First, the load needed libraries:   
+
+```{r, load-libraries, messages=FALSE}
+library(tidyverse)
+library(skimr)
+library(DataExplorer)
+library(tidymodels)
+library(tictoc)
+library(tidylog)
+library(reactable)
+library(gt)
+```
+
+
+Now scrape the data and save the results to a csv:  
+
+```{r scrape-2019, eval=FALSE}
+dates <- seq(from = as.Date("2019-09-28"), to = as.Date("2019-09-29"), by = 1)
+
+batter_2019 <- data.frame()
+count <- 0
+tic()
+for (i in 1:length(dates)) {
+  print(dates[i])
+  begin_date <- as.character(dates[i])
+  end_date <- as.character(dates[i])
+  
+  url <- paste0("https://baseballsavant.mlb.com/statcast_search/csv?all=true&hfPT=&hfAB=&hfGT=R%7C&hfPR=&hfZ=&stadium=&hfBBL=&hfNewZones=&hfPull=&hfC=&hfSea=&hfSit=&player_type=batter&hfOuts=&opponent=&pitcher_throws=&batter_stands=&hfSA=&game_date_gt=",begin_date,"&game_date_lt=",end_date,"&hfInfield=&team=&position=&hfOutfield=&hfRO=&home_road=&hfFlag=&hfBBT=&metric_1=&hfInn=&min_pitches=0&min_results=0&group_by=name&sort_col=pitches&player_event_sort=api_p_release_speed&sort_order=desc&min_pas=0&type=details")
+
+  
+  df <- readr::read_csv(url)
+  if (nrow(df) > 0){
+    batter_2021 <- bind_rows(df, batter_2021)
+  }
+  print(paste0("dates left ", as.character(length(dates) - i)))
+  count <- count + 1
+  if (count >= 65) {
+    Sys.sleep(60*5)
+    count <- 0
+  }
+  print(count)
+  
+}
+toc()
+
+readr::write_excel_csv(batter_2019, file = "C:\\Users\\louis\\Downloads\\batter_2019.csv")
+
+```
+
+```{r, messages=FALSE, echo=FALSE}
+
+batter_2019 <- readr::read_delim(file = "C:\\Users\\louis\\Downloads\\batter_2019.csv", delim = ",")
+
+desired_events <- c("field_out",
+                    "strikeout",
+                    "single",
+                    "walk",
+                    "double",
+                    "home_run",
+                    "force_out",
+                    "grounded_into_double_play",
+                    "hit_by_pitch",
+                    "field_error",
+                    "triple",
+                    "fielders_choice",
+                    "double_play",
+                    "fielders_choice_out",
+                    "strikeout_double_play")
+
+batter_2019_events <- batter_2019 %>%
+  filter(events %in% desired_events) %>%
+  mutate(runner_1b = if_else(!is.na(on_1b), 1, 0),
+         runner_2b = if_else(!is.na(on_2b), 1, 0),
+         runner_3b = if_else(!is.na(on_3b), 1, 0)) %>%
+  drop_na(release_speed) %>%
+  drop_na(zone) %>%
+  drop_na(pitch_type)
+
+xgboost_fit_woba <- readRDS(file = "C:\\Users\\louis\\Documents\\GitHub\\xp_woba\\xgboost_fit_woba.rds")
+
+set.seed(123)
+be_split <- initial_split(batter_2019_events, prop = 3/4)
+be_train <- training(be_split)
+be_test <- testing(be_split)
+
+woba_formula <- formula(woba_value ~ release_speed + pitch_type + zone + stand + p_throws + balls + strikes + outs_when_up + pfx_x + pfx_z + runner_1b + runner_2b + runner_3b + plate_x + plate_z)
+
+preprocessing_recipe_woba <- 
+  recipes::recipe(woba_formula, data = be_train) %>%
+  recipes::step_integer(all_nominal()) %>%
+  prep()
+```
+
+
+# Modeling
+Normally, I would put an EDA section before modeling but I did the EDA separately and it deserves its own post. 
+
+Here are the key features I am going to be using for modeling. For a glossary of the terms visit [baseball savant CSV doc](https://baseballsavant.mlb.com/csv-docs).  
+
+- release_speed
+- pitch_type
+- zone
+- stand
+- p_throws
+- balls
+- strikes
+- outs_when_up
+- pfx_x
+- pfx_z
+- runner_1b
+- runner_2b
+- runner_3b
+- plate_x
+- plate_z
+
+
+Here is the code I used to train the model. I utilized grid search to find the optimal hyperparameter values. Here is a good blog post by Julia Silge that demonstrates the technique I used: [Tune XGBoost with tidymodels](https://juliasilge.com/blog/xgboost-tune-volleyball/)  
+
+```{r train-model, eval=FALSE}
+set.seed(123)
+be_split <- initial_split(batter_2019_events, prop = 3/4)
+be_train <- training(be_split)
+be_test <- testing(be_split)
+
+woba_formula <- formula(woba_value ~ release_speed + pitch_type + zone + stand + p_throws + balls + strikes + outs_when_up + pfx_x + pfx_z + runner_1b + runner_2b + runner_3b + plate_x + plate_z)
+
+preprocessing_recipe_woba <- 
+  recipes::recipe(woba_formula, data = be_train) %>%
+  recipes::step_integer(all_nominal()) %>%
+  prep()
+
+xgboost_model_woba <- boost_tree(
+  trees          = 2000, 
+  stop_iter      = 250,
+  tree_depth     = 13, 
+  min_n          = 18, 
+  loss_reduction = 4.355132,                    
+  sample_size    = 0.8210649, 
+  mtry           = 54,         
+  learn_rate     = 0.005436754,                         
+) %>% 
+  set_engine("xgboost") %>% 
+  set_mode("regression")
+
+train_processed <- bake(preprocessing_recipe_woba,  new_data = be_train)
+
+
+xgboost_fit_woba <- xgboost_model_woba %>%
+  # fit the model on all the training data
+  fit(
+    formula = woba_formula, 
+    data    = train_processed
+  )
+
+saveRDS(xgboost_fit_woba, file = "C:\\Users\\louis\\Documents\\GitHub\\xp_woba\\xgboost_fit_woba.rds")
+
+```
+
+
+
+Check how the model performs on the test data:  
+
+```{r}
+
+test_processed <- bake(preprocessing_recipe_woba,  new_data = be_test)
+
+test_prediction_woba <- xgboost_fit_woba %>%
+  # fit the model on all the training data
+  # predict the sale prices for the training data
+  predict(new_data = test_processed) %>%
+  bind_cols(be_test)
+
+test_prediction_woba %>%
+  yardstick::metrics(truth = woba_value, estimate = .pred) %>%
+  gt()
+```
+
+#### Top Features
+Here are the top features:  
+
+```{r, message=FALSE}
+library(vip)
+
+xgboost_fit_woba %>%
+  vip(geom = "col")
+```
+The ball and strike count are very important with location coming in second (plate_x, plate_z, zone). Horizontal and vertical movement is next followed up by the speed of the pitch. 
+
+# Best Pitches of the 2021 season
+Now, the fun part. Let's utilize this model to find the best pitches of the 2021 season. Using the same scraping technique, I scraped the baseball savant data for the 2021 season. 
+
+```{r load-2021-data, message=FALSE, echo=FALSE}
+batter_2021 <- readr::read_delim(file = "C:\\Users\\louis\\Downloads\\batter_2021.csv", delim = ",") %>%
+  mutate(runner_1b = if_else(!is.na(on_1b), 1, 0),
+         runner_2b = if_else(!is.na(on_2b), 1, 0),
+         runner_3b = if_else(!is.na(on_3b), 1, 0))
+
+batter_2021_events <- batter_2021 %>%
+  filter(events %in% desired_events) %>%
+  drop_na(release_speed) %>%
+  drop_na(zone) %>%
+  drop_na(pitch_type)
+```
+
+
+Process the 2021 data and make predictions:  
+
+```{r, message=FALSE}
+batter_2021_processed <- bake(preprocessing_recipe_woba,  new_data = batter_2021)
+
+batter_2021_prediction_woba <- xgboost_fit_woba %>%
+  # fit the model on all the training data
+  # predict the sale prices for the training data
+  predict(new_data = batter_2021_processed) %>%
+  bind_cols(batter_2021) %>%
+  select(player_name, game_date, des, events, woba_value, .pred, release_speed, pitch_type, zone, stand, p_throws, balls, strikes, outs_when_up, pfx_x, pfx_z, runner_1b, runner_2b, runner_3b, plate_x, plate_z)
+```
+
+### Highest Predicted Value
+
+```{r, message=FALSE}
+batter_2021_prediction_woba %>%
+  select(-c(des, events, woba_value, stand, p_throws, outs_when_up, pfx_x, pfx_z, runner_1b, runner_2b, runner_3b, plate_x, plate_z)) %>%
+  arrange(desc(.pred)) %>%
+  head() %>%
+  gt()
+```
+
+Throwing a pitch out of the strike zone with 3 balls is not good. The top three pitches are Eephus (EP) pitches that are thrown in the 40's. I think we can all agree that is a very low-quality pitch. The awesome thing about baseballsavant is that you can search for specific pitches using their search and find the video. Here is the video of the lowest quality pitch of the 2021 season:
+
+<iframe width="100%" height="500" src="C:\\Users\louis\\Downloads\\bo-bichette-high-ev.mp4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+The first non-3-ball pitch or potential hit-by-pitch is the four-seam fastball thrown to Carlos Correa. The release speed is extremely slow at 60.8 MPH on a 2 ball and 1 strike count in the heart of the plate. This is how it looked in real life:
+
+<iframe width="100%" height="500" src="C:\\Users\louis\\Downloads\\carlos-correa-high-ev.mp4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+That is a meatball if I have ever seen one. 
+
+### Lowest Predicted Value
+Now let's take a look at the best pitches:  
+
+```{r}
+batter_2021_prediction_woba %>%
+  select(-c(des, events, woba_value, stand, p_throws, outs_when_up, pfx_x, pfx_z, runner_1b, runner_2b, runner_3b, plate_x, plate_z)) %>%
+  arrange(.pred) %>%
+  head() %>%
+  gt()
+```
+
+From this, we can see that throwing high and out of the strike zone on a 0 ball and 2 strike count is a very good idea. This isn't very interesting to look at so let's find the top non-0-2 count pitch:  
+
+```{r}
+batter_2021_prediction_woba %>%
+  select(-c(des, events, woba_value, stand, p_throws, outs_when_up, pfx_x, pfx_z, runner_1b, runner_2b, runner_3b, plate_x, plate_z)) %>%
+  filter(strikes < 2) %>%
+  arrange(.pred) %>%
+  head() %>%
+  gt()
+```
+
+
+
+The top pitch now becomes a 0 ball and 1 strike count 93.6 MPH four-seam fastball in the top edge of the strike zone. Funnily enough, though clearly in the strike zone, it is called a ball. Here is the video:  
+
+<iframe width="100%" height="500" src="C:\\Users\louis\\Downloads\\martin-maldonado-low-ev.mp4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+I think this demonstrates the importance of balls and strike count when determining a pitch's quality. Let's see what the best pitch is for each count:  
+
+```{r}
+batter_2021_prediction_woba %>%
+  group_by(balls, strikes) %>%
+  filter(.pred == min(.pred)) %>%
+  ungroup() %>%
+  select(-c(des, events, woba_value, stand, p_throws, outs_when_up, pfx_x, pfx_z, runner_1b, runner_2b, runner_3b, plate_x, plate_z)) %>%
+  select(player_name, game_date, balls, strikes, everything()) %>%
+  arrange(balls, strikes) %>%
+  gt()
+```
+
+This shows that early in the count, it's a good idea to throw a strike high in the strike zone. When the count becomes 0 balls and 2 strikes then throw it out of the strike zone to try and get the hitter to chase. If you get behind in the count then, again, throwing strikes in the top of the zone to try to even the count. The first non-fastball is on a 2 ball and 2 strike count. Here's what it looked like:  
+
+<iframe width="100%" height="500" src="C:\\Users\louis\\Downloads\\carlos-santana-2-2-top-pitch.mp4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+Now, that's a nasty pitch. The pitch starts at the top of the strike zone and breaks several inches out of the zone. The next top pitch for the 3 balls and 1 strike has great movement, too, but since the hitter has 3 balls then the pitch needs to be in the strike zone. Here is the top 3 ball and 1 strike pitch:
+
+<iframe width="100%" height="500" src="C:\\Users\louis\\Downloads\\shohei-ohtani-3-1-top-pitch.mp4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+The ball starts as a strike on the inside part of the plate and breaks significantly away from the hitter and would have been still a strike even if the batter didn't swing. 
+
+### Most unlikely home runs
+```{r}
+batter_2021_prediction_woba %>%
+  select(-c(des, events, stand, p_throws, outs_when_up, pfx_x, pfx_z, runner_1b, runner_2b, runner_3b, plate_x, plate_z)) %>%
+  arrange(desc(woba_value - .pred)) %>%
+  head() %>%
+  gt()
+```
+
+The most unlikely home run of 2021 belongs to Rhys Hoskins. Smashes a 98 MPH fastball high and out of the zone. 
+
+<iframe width="100%" height="500" src="C:\\Users\louis\\Downloads\\rhys-hoskins-unlikely-hr.mp4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>  
+
+Look at this golf shot from Altuve that is the second least likely home run. 
+
+<iframe width="100%" height="500" src="C:\\Users\louis\\Downloads\\altuve-unlikely-hr.mp4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>  
+
+I could watch these all day. I would highly encourage everyone to use the search feature and watch all of these. 
+
+### Biggest meatball missed
+
+```{r}
+batter_2021_prediction_woba %>%
+  select(-c(des, events, stand, p_throws, outs_when_up, pfx_x, pfx_z, runner_1b, runner_2b, runner_3b, plate_x, plate_z)) %>%
+  arrange((woba_value - .pred)) %>%
+  head() %>%
+  gt()
+```
+
+The biggest meatball missed was by Ehire Adrianza, but I like the Chas McCormick one more. 60 MPH fastball lobbed into the heart of the plate. 
+
+<iframe width="100%" height="500" src="C:\\Users\louis\\Downloads\\mccormic-meatball-missed.mp4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>  
+
+# xp_wOBAOE (Expected Pitch wOBA Over Expected)
+Like I mentioned earlier, this new metric allows us to measure which batters are performing better than expected given their pitch quality. Let's take a look at the top total value over expected:  
+
+```{r}
+batter_2021_prediction_woba %>%
+  filter(!is.na(woba_value)) %>%
+  group_by(player_name) %>%
+  summarise(n = n(),
+            xp_wOBAOE_sum = sum(woba_value - .pred)) %>%
+  arrange(desc(xp_wOBAOE_sum)) %>%
+  head(10) %>%
+  gt()
+```
+
+So this shows the sum of the total value over expected and Shohei Ohtani is running away with first place. Shohei Ohtani has provided the most value to his team this year. What about the most average value with at least 100 at-bats?
+
+```{r}
+batter_2021_prediction_woba %>%
+  filter(!is.na(woba_value)) %>%
+  group_by(player_name) %>%
+  summarise(n = n(),
+            xp_wOBAOE_avg = mean(woba_value - .pred)) %>%
+  arrange(desc(xp_wOBAOE_avg)) %>%
+  filter(n >= 100) %>%
+  head(10) %>%
+  gt()
+```
+
+Byron Buxton, while not playing very much, has been tremendous. The same goes for Mike Trout. The big surprise on the list is Patrick Wisdom. 
+
+# Future Improvements
+
+The model could be improved with further feature engineering. The two top-of-mind:  
+
+1. Factor in the previous pitch. Some pitches are considered set-up pitches. For example, a pitcher could throw a fastball high and tight on the hitter then throw the next a breaking pitch low and outside. The difference in speed, movement, and location could make the pitch even more effective. 
+2. All movement is not created equally. A fastball that moves 8 inches might be a large amount of movement for a fastball but when compared to a curveball doesn't move at all. Scale movement using the release point, speed, and pitch type. 
+
+# Future Analysis
+
+1. Analyze the best pitcher outings based on pitch quality.
+2. Top batters in swinging at quality pitches.
+
+
+
+
+

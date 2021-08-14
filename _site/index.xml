@@ -7,7 +7,16 @@
     <description>The Louis Oberdiear (LOB) Blog.
 </description>
     <generator>Distill</generator>
-    <lastBuildDate>Thu, 24 Jun 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 28 Jul 2021 00:00:00 +0000</lastBuildDate>
+    <item>
+      <title>Introducing xp_wOBA (Expected Pitch wOBA)</title>
+      <dc:creator>Louis Oberdiear</dc:creator>
+      <link>https://thelob.blog/posts/2021-07-28-introducing-xpwoba-expected-pitch-woba</link>
+      <description>In this post, I created a new performance metric for both hitters and pitchers called xp_wOBA (Expected Pitch wOBA). It's a new metric to determine a single pitch's quality. It takes into account release speed, pitch location, hitter's count, pitch movement, etc. to determine the quality of a pitch.</description>
+      <guid>https://thelob.blog/posts/2021-07-28-introducing-xpwoba-expected-pitch-woba</guid>
+      <pubDate>Wed, 28 Jul 2021 00:00:00 +0000</pubDate>
+      <media:content url="https://thelob.blog/posts/2021-07-28-introducing-xpwoba-expected-pitch-woba/strike_zone.png" medium="image" type="image/png" width="279" height="290"/>
+    </item>
     <item>
       <title>Predicting Customer Tenure...with MLB Hitters</title>
       <dc:creator>Louis Oberdiear</dc:creator>
