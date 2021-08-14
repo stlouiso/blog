@@ -2139,6 +2139,7 @@ gtag('config', 'G-HYN1FKX625');
 <ul>
 <li><a href="#motivation">Motivation</a></li>
 <li><a href="#why-woba">Why wOBA?</a></li>
+<li><a href="#methodology">Methodology</a></li>
 <li><a href="#data">Data</a></li>
 <li><a href="#modeling">Modeling</a></li>
 <li><a href="#best-pitches-of-the-2021-season">Best Pitches of the 2021 season</a>
@@ -2205,6 +2206,8 @@ gtag('config', 'G-HYN1FKX625');
 </table>
 <p>As the article above states, not all hits are created equal. A walk doesn’t have the same value as a single and a single doesn’t have the same value as a home run. Yet, metrics like batting average and on-base percentage treat them equally. While slugging percentage does weight hits, it does so by total bases which exaggerate the value of doubles, triples, and home runs.</p>
 <p>By using this metric that captures the value of a batting event accurately then we can more accurately judge the value of a given pitch (e.g. a pitch in this location, at this speed, in this count, has an expected value of <em>x</em>). A pitch is of high quality if the expected value is low.</p>
+<h1 id="methodology">Methodology</h1>
+<p>The model is going to be trained using “event” only data. This means the data will only be the last pitch of each at-bat. This will give us the ability to estimate for each pitch as if it were going to be an “event” (walk, hit, strikeout, groundout, flyout, etc.). If a pitcher throws a fastball down the middle of the plate, we can estimate the potential value if the batter were to put it in play, walk, or strikeout.</p>
 <h1 id="data">Data</h1>
 <p>I’m going to be using 2019 data scraped from <a href="https://baseballsavant.mlb.com/statcast_search">https://baseballsavant.mlb.com/statcast_search</a> using the code below.</p>
 <p>First, the load needed libraries:</p>
@@ -2782,7 +2785,7 @@ Show code
 </code></pre>
 </div>
 </details>
-<p><img src="introducing-xpwoba-expected-pitch-woba_files/figure-html5/unnamed-chunk-3-1.png" width="624" /></p>
+<p><img src="introducing-xpwoba-expected-pitch-woba_files/figure-html5/unnamed-chunk-2-1.png" width="624" /></p>
 </div>
 <p>The ball and strike count are very important with location coming in second (plate_x, plate_z, zone). Horizontal and vertical movement is next followed up by the speed of the pitch.</p>
 <h1 id="best-pitches-of-the-2021-season">Best Pitches of the 2021 season</h1>

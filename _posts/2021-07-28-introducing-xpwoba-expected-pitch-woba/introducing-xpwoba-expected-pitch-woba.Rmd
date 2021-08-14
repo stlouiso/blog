@@ -42,6 +42,10 @@ As the article above states, not all hits are created equal. A walk doesn't have
 
 By using this metric that captures the value of a batting event accurately then we can more accurately judge the value of a given pitch (e.g. a pitch in this location, at this speed, in this count, has an expected value of *x*). A pitch is of high quality if the expected value is low. 
 
+# Methodology
+
+The model is going to be trained using "event" only data. This means the data will only be the last pitch of each at-bat. This will give us the ability to estimate for each pitch as if it were going to be an "event" (walk, hit, strikeout, groundout, flyout, etc.). If a pitcher throws a fastball down the middle of the plate, we can estimate the potential value if the batter were to put it in play, walk, or strikeout. 
+
 # Data  
 I'm going to be using 2019 data scraped from [https://baseballsavant.mlb.com/statcast_search](https://baseballsavant.mlb.com/statcast_search) using the code below.
 
@@ -94,7 +98,7 @@ readr::write_excel_csv(batter_2019, file = "C:\\Users\\louis\\Downloads\\batter_
 
 ```
 
-```{r, messages=FALSE, echo=FALSE}
+```{r load-for-rmd, messages=FALSE, echo=FALSE}
 
 batter_2019 <- readr::read_delim(file = "C:\\Users\\louis\\Downloads\\batter_2019.csv", delim = ",")
 
