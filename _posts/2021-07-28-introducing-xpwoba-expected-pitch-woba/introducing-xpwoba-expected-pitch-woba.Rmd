@@ -275,11 +275,11 @@ batter_2021_prediction_woba %>%
 
 Throwing a pitch out of the strike zone with 3 balls is not good. The top three pitches are Eephus (EP) pitches that are thrown in the 40's. I think we can all agree that is a very low-quality pitch. The awesome thing about baseballsavant is that you can search for specific pitches using their search and find the video. Here is the video of the lowest quality pitch of the 2021 season:
 
-<iframe width="100%" height="500" src="https://sporty-clips.mlb.com/0b29e112-3d3e-4ba8-a4a2-c818fc1f2b15.mp4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="100%" height="500" src="https://sporty-clips.mlb.com/0b29e112-3d3e-4ba8-a4a2-c818fc1f2b15.mp4" frameborder="0" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 The first non-3-ball pitch or potential hit-by-pitch is the four-seam fastball thrown to Carlos Correa. The release speed is extremely slow at 60.8 MPH on a 2 ball and 1 strike count in the heart of the plate. This is how it looked in real life:
 
-<iframe width="100%" height="500" src="C:\\Users\louis\\Downloads\\carlos-correa-high-ev.mp4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="100%" height="500" src="https://sporty-clips.mlb.com/32b59eb9-48bc-483a-a1bf-e18f25792fe9.mp4" frameborder="0" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 That is a meatball if I have ever seen one. 
 
@@ -309,7 +309,7 @@ batter_2021_prediction_woba %>%
 
 The top pitch now becomes a 0 ball and 1 strike count 93.6 MPH four-seam fastball in the top edge of the strike zone. Funnily enough, though clearly in the strike zone, it is called a ball. Here is the video:  
 
-<iframe width="100%" height="500" src="https://sporty-clips.mlb.com/e04e1394-47c5-476a-a8ff-4b957eadb64c.mp4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="100%" height="500" src="https://sporty-clips.mlb.com/e04e1394-47c5-476a-a8ff-4b957eadb64c.mp4" frameborder="0" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 I think this demonstrates the importance of balls and strike count when determining a pitch's quality. Let's see what the best pitch is for each count:  
 
@@ -326,11 +326,11 @@ batter_2021_prediction_woba %>%
 
 This shows that early in the count, it's a good idea to throw a strike high in the strike zone. When the count becomes 0 balls and 2 strikes then throw it out of the strike zone to try and get the hitter to chase. If you get behind in the count then, again, throwing strikes in the top of the zone to try to even the count. The first non-fastball is on a 2 ball and 2 strike count. Here's what it looked like:  
 
-<iframe width="100%" height="500" src="https://sporty-clips.mlb.com/c04b6a2a-d5e0-42a4-9c90-573f175afb7a.mp4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="100%" height="500" src="https://sporty-clips.mlb.com/c04b6a2a-d5e0-42a4-9c90-573f175afb7a.mp4" frameborder="0" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 Now, that's a nasty pitch. The pitch starts at the top of the strike zone and breaks several inches out of the zone. The next top pitch for the 3 balls and 1 strike has great movement, too, but since the hitter has 3 balls then the pitch needs to be in the strike zone. Here is the top 3 ball and 1 strike pitch:
 
-<iframe width="100%" height="500" src="C:\\Users\louis\\Downloads\\shohei-ohtani-3-1-top-pitch.mp4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="100%" height="500" src="https://sporty-clips.mlb.com/fd75eb05-3239-481a-ad97-dcffb9708e01.mp4" frameborder="0" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 The ball starts as a strike on the inside part of the plate and breaks significantly away from the hitter and would have been still a strike even if the batter didn't swing. 
 
@@ -345,11 +345,11 @@ batter_2021_prediction_woba %>%
 
 The most unlikely home run of 2021 belongs to Rhys Hoskins. Smashes a 98 MPH fastball high and out of the zone. 
 
-<iframe width="100%" height="500" src="C:\\Users\louis\\Downloads\\rhys-hoskins-unlikely-hr.mp4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>  
+<iframe width="100%" height="500" src="https://sporty-clips.mlb.com/1858d317-f306-422b-82f9-19953643a75a.mp4" frameborder="0" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>  
 
 Look at this golf shot from Altuve that is the second least likely home run. 
 
-<iframe width="100%" height="500" src="https://sporty-clips.mlb.com/26dbbda1-dc85-4d60-816d-5ba0ca2c78fe.mp4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>  
+<iframe width="100%" height="500" src="https://sporty-clips.mlb.com/26dbbda1-dc85-4d60-816d-5ba0ca2c78fe.mp4" frameborder="0" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>  
 
 I could watch these all day. I would highly encourage everyone to use the search feature and watch all of these. 
 
@@ -365,7 +365,7 @@ batter_2021_prediction_woba %>%
 
 The biggest meatball missed was by Ehire Adrianza, but I like the Chas McCormick one more. 60 MPH fastball lobbed into the heart of the plate. 
 
-<iframe width="100%" height="500" src="C:\\Users\louis\\Downloads\\mccormic-meatball-missed.mp4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>  
+<iframe width="100%" height="500" src="https://sporty-clips.mlb.com/26dbbda1-dc85-4d60-816d-5ba0ca2c78fe.mp4" frameborder="0" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>  
 
 # xp_wOBAOE (Expected Pitch wOBA Over Expected)
 Like I mentioned earlier, this new metric allows us to measure which batters are performing better than expected given their pitch quality. Let's take a look at the top total value over expected:  
